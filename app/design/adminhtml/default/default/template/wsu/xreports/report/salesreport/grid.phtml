@@ -94,7 +94,7 @@ $requestData =    Mage::helper('adminhtml')->prepareFilterString($this->getReque
             <div id="period_date_from_advaice"></div>
         </div>        
         <div class="f-left">
-            <div><?php echo $this->helper('xreports')->__('to: ') ?><input class="input-text no-changes" type="text" id="period_date_to" value="<?php if(isset($requestData['created_at'])){echo $requestData['created_at']['to'];} ?>" onchange="setCreatedAtTo(this.value);" name="report_to" style="width:5em"> <img src="<?php echo $this->getSkinUrl('images/grid-cal.gif')?>" class="v-middle" title="Select Date" id="period_date_to_trig" alt="Select Date">&nbsp;&nbsp;</div>
+            <div><?php echo $this->helper('xreports')->__('to: ') ?><input class="input-text no-changes" type="text" id="period_date_to" value="<?php if(isset($requestData['created_at']) && isset($requestData['created_at']['to'])){echo $requestData['created_at']['to'];} ?>" onchange="setCreatedAtTo(this.value);" name="report_to" style="width:5em"> <img src="<?php echo $this->getSkinUrl('images/grid-cal.gif')?>" class="v-middle" title="Select Date" id="period_date_to_trig" alt="Select Date">&nbsp;&nbsp;</div>
             <div id="period_date_to_advaice"></div>
         </div>
         <div class="f-left">            
@@ -150,6 +150,7 @@ $_col = $this->getRequest()->getParam('_col');
     <div class="filter_col_block" style="display:none;">
         <form action="" method="post" >
             <input type="checkbox" name="_col[increment_id]" <?php if( isset($_col['increment_id']) ):?>checked<?php endif;?> value='1' />Order #<br/>
+            <input type="checkbox" name="_col[dyno_options]" <?php if( isset($_col['dyno_options']) ):?>checked<?php endif;?> value='1' />Item Options<br/>
             <input type="checkbox" name="_col[created_at]"  <?php if( isset($_col['created_at']) ):?>checked<?php endif;?> value='1' />Order Date<br/>
             <input type="checkbox" name="_col[status]"  <?php if( isset($_col['status']) ):?>checked<?php endif;?> value='1' />Status<br/>
             <input type="checkbox" name="_col[sku]"  <?php if( isset($_col['sku']) ):?>checked<?php endif;?> value='1' />Sku<br/>

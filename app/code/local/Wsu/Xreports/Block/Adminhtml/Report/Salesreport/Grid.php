@@ -87,13 +87,18 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Grid extends Mage_Adminhtm
     }
 
     protected function _prepareColumns() {
-		
+		$_col = $this->getRequest()->getParam('_col');
 		$_col = Mage::getSingleton('core/session')->getFilteredCol();
 		$post_col = $this->getRequest()->getParam('_col');
 		if(!empty($post_col)){
 			$_col = $post_col;
 			Mage::getSingleton('core/session')->setFilteredCol($_col);
 		}
+		if($_col==null){
+			$_col=array();
+		}/**/
+		
+		//*/
 		//var_dump($_col);
 		if(empty($_col) || isset($_col['increment_id'])){
 			$this->addColumn('increment_id', array(
@@ -139,6 +144,21 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Grid extends Mage_Adminhtm
 				'sortable' => true
 			));
 		}
+
+		
+		if(empty($_col) || isset($_col['dyno_options'])){
+			$this->addColumn('customer_email', array(
+				'header' => Mage::helper('xreports')->__('Item options'),
+				'align' => 'left',
+				'width' => '250',
+				'index' => 'increment_id',
+				'type' => 'text',
+				'renderer' => 'Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Renderer_Item',
+				'sortable' => true
+			));
+		}
+
+
 		
 		if(empty($_col) || isset($_col['customer_email'])){
 			$this->addColumn('customer_email', array(
