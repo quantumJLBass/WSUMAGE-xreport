@@ -1,0 +1,840 @@
+<?php
+$numColumns = sizeof($this->getColumns());
+$requestData =    Mage::helper('adminhtml')->prepareFilterString($this->getRequest()->getParam('filter'));
+?>
+<?php
+    $orderCollection = Mage::getModel('sales/order')
+        ->getCollection()
+        ->addAttributeToSelect('*');
+    if(count($orderCollection)> 0) {
+        $firstItem = $orderCollection->getFirstItem(); 
+        $lastItem  = $orderCollection->getLastItem();
+        $firstItemCreatedAt = date('d-m-Y', strtotime(Mage::helper('core')->formatDate($firstItem->getCreatedAt() . '- 1 days', 'short', false)));   
+        $lastItemCreatedAt = date('d-m-Y', strtotime(Mage::helper('core')->formatDate($lastItem->getCreatedAt() . '+ 1 days', 'short', false)));
+    }
+?>
+<?php echo $this->getLayout()->createBlock('adminhtml/store_switcher')->setTemplate('report/store/switcher/enhanced.phtml')->setStoreVarName('store_ids')->toHtml(); ?>
+<?php if($this->getCollection()): ?>
+    <?php if($this->canDisplayContainer()): ?>
+        <?php if($this->getGridHeader()): ?>
+        <div class="content-header">
+            <table cellspacing="0">
+                <tr>
+                    <td style="width:50%;"><h2><?php echo $this->getGridHeader(); ?></h2></td>
+                </tr>
+            </table>
+        </div>
+        <?php endif ?>
+
+        <div id="<?php echo $this->getId() ?>">
+    <?php else: ?>
+        <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+    <?php endif; ?>
+<?php if($this->getPagerVisibility() || $this->getExportTypes() || $this->getFilterVisibility()): ?>
+    <table cellspacing="0" class="actions">
+        <tr>
+        <?php if($this->getPagerVisibility()): ?>
+            <td class="pager">
+            <?php echo $this->__('Page') ?>
+
+            <?php $_curPage  = $this->getCollection()->getCurPage() ?>
+            <?php $_lastPage = $this->getCollection()->getLastPageNumber() ?>
+            <?php if($_curPage>1): ?>
+                <a href="#" title="<?php echo $this->__('Previous page') ?>" onclick="<?php echo $this->getJsObjectName() ?>.setPage('<?php echo ($_curPage-1) ?>');return false;"><img src="<?php echo $this->getSkinUrl('images/pager_arrow_left.gif') ?>" alt="Go to Previous page" class="arrow"/></a>
+            <?php else: ?>
+                <img src="<?php echo $this->getSkinUrl('images/pager_arrow_left_off.gif') ?>" alt="Go to Previous page" class="arrow"/>
+            <?php endif; ?>
+
+            <input type="text" name="<?php echo $this->getVarNamePage() ?>" value="<?php echo $_curPage ?>" class="input-text page" onkeypress="<?php echo $this->getJsObjectName() ?>.inputPage(event, '<?php echo $_lastPage ?>')"/>
+
+            <?php if($_curPage < $_lastPage): ?>
+                <a href="#" title="<?php echo $this->__('Next page') ?>" onclick="<?php echo $this->getJsObjectName() ?>.setPage('<?php echo ($_curPage+1) ?>');return false;"><img src="<?php echo $this->getSkinUrl('images/pager_arrow_right.gif') ?>" alt="Go to Next page" class="arrow"/></a>
+            <?php else: ?>
+                <img src="<?php echo $this->getSkinUrl('images/pager_arrow_right_off.gif') ?>" alt="Go to Previous page" class="arrow"/>
+            <?php endif; ?>
+
+            <?php echo $this->__('of %s pages', $this->getCollection()->getLastPageNumber()) ?>
+            <span class="separator">|</span>
+            <?php echo $this->__('View') ?>
+            <select name="<?php echo $this->getVarNameLimit() ?>" onchange="<?php echo $this->getJsObjectName() ?>.loadByElement(this)">
+                <option value="20"<?php if($this->getCollection()->getPageSize()==20): ?> selected="selected"<?php endif; ?>>20</option>
+                <option value="30"<?php if($this->getCollection()->getPageSize()==30): ?> selected="selected"<?php endif; ?>>30</option>
+                <option value="50"<?php if($this->getCollection()->getPageSize()==50): ?> selected="selected"<?php endif; ?>>50</option>
+                <option value="100"<?php if($this->getCollection()->getPageSize()==100): ?> selected="selected"<?php endif; ?>>100</option>
+                <option value="200"<?php if($this->getCollection()->getPageSize()==200): ?> selected="selected"<?php endif; ?>>200</option>
+            </select>
+            <?php echo $this->__('per page') ?><span class="separator">|</span>
+            <?php echo $this->__('Total %d records found', $this->getCollection()->getSize()) ?>
+            <span id="<?php echo $this->getHtmlId() ?>-total-count" class="no-display"><?php echo $this->getCollection()->getSize() ?></span>
+            <?php if($this->getRssLists()): ?>
+                <?php foreach ($this->getRssLists() as $_rss): ?>
+                <span class="separator">|</span><a href="<?php echo $_rss->getUrl() ?>" class="link-feed"><?php echo $_rss->getLabel() ?></a>
+                <?php endforeach ?>
+            <?php endif; ?>
+        </td>
+    <?php endif ?>
+    <td class="a-left">
+        <div class="f-left">
+            <?php echo $this->helper('xreports')->__('Custom Date Range ') ?>
+            <select id="custom_date_range" class=" select" onchange="switchCustomDateRange(this.value);" title="Custom Date Range" name="custom_date_range">
+                <option value="custom">Custom date</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="last_7_days">Last 7 days</option>
+                <option value="last_week">Last week (Sunday - Saturday)</option>
+                <option value="last_business_week">Last business week (Monday - Friday)</option>
+                <option value="this_month">This month</option>
+                <option value="last_month">Last month</option>
+                <option value="first_to_last">* From <?php echo Mage::helper('core')->formatDate($firstItemCreatedAt, 'long', false) ?> to <?php echo Mage::helper('core')->formatDate($lastItemCreatedAt, 'long', false) ?></option>
+            </select>            
+            &nbsp;
+        </div>
+        <div class="f-left">
+            <div><?php echo $this->helper('xreports')->__('From ') ?><input class="input-text no-changes" type="text" id="period_date_from" value="<?php if(isset($requestData['created_at'])){echo $requestData['created_at']['from'];} ?>" onchange="setCreatedAtFrom(this.value);" name="report_from" style="width:5em"> <img src="<?php echo $this->getSkinUrl('images/grid-cal.gif')?>" title="Select Date" id="period_date_from_trig" alt="Select Date" class="v-middle">&nbsp;&nbsp;</div>
+            <div id="period_date_from_advaice"></div>
+        </div>        
+        <div class="f-left">
+            <div><?php echo $this->helper('xreports')->__('to: ') ?><input class="input-text no-changes" type="text" id="period_date_to" value="<?php if(isset($requestData['created_at'])){echo $requestData['created_at']['to'];} ?>" onchange="setCreatedAtTo(this.value);" name="report_to" style="width:5em"> <img src="<?php echo $this->getSkinUrl('images/grid-cal.gif')?>" class="v-middle" title="Select Date" id="period_date_to_trig" alt="Select Date">&nbsp;&nbsp;</div>
+            <div id="period_date_to_advaice"></div>
+        </div>
+        <div class="f-left">            
+            <button class="scalable task" style="" onclick="salesReportGridJsObject.doFilter()" type="button">
+                <span><span>Refresh</span></span>
+            </button>
+            <button class="scalable " style="" onclick="salesReportGridJsObject.resetFilter()" type="button">
+                <span><span>Reset Filter</span></span>
+            </button>
+        </div>
+    </td>                                       
+    <script type="text/javascript">
+        <!--
+        Calendar.setup({
+            inputField : 'period_date_from',
+            ifFormat : '%d-%m-%Y',
+            button : 'period_date_from_trig',
+            align : 'Bl',
+            singleClick : true
+        });
+        Calendar.setup({
+            inputField : 'period_date_to',
+            ifFormat : '%d-%m-%Y',
+            button : 'period_date_to_trig',
+            align : 'Bl',
+            singleClick : true
+        });
+        //-->
+    </script>
+    <?php if($this->getExportTypes()): ?>
+        <td class="export a-right">
+            <img src="<?php echo $this->getSkinUrl('images/icon_export.gif') ?>" alt="" class="v-middle"/>&nbsp; <?php echo $this->__('Export to:') ?>
+            <select name="<?php echo $this->getId() ?>_export" id="<?php echo $this->getId() ?>_export" style="width:8em;">
+            <?php foreach ($this->getExportTypes() as $_type): ?>
+                <option value="<?php echo $_type->getUrl() ?>"><?php echo $_type->getLabel() ?></option>
+            <?php endforeach; ?>
+            </select>
+            <?php echo $this->getExportButtonHtml() ?>
+        </td>
+    <?php endif; ?>
+        <!--<td class="filter-actions a-right">
+            <?php echo $this->getMainButtonsHtml() ?>
+        </td>-->
+        </tr>
+    </table>
+<?php endif; ?>
+
+<?php
+$_col = $this->getRequest()->getParam('_col');
+?>
+<div>
+    <a href="#" class="filter_col">Choose Columns</a>
+    <div class="filter_col_block" style="display:none;">
+        <form action="" method="post" >
+            <input type="checkbox" name="_col[increment_id]" <?php if( isset($_col['increment_id']) ):?>checked<?php endif;?> value='1' />Order #<br/>
+            <input type="checkbox" name="_col[created_at]"  <?php if( isset($_col['created_at']) ):?>checked<?php endif;?> value='1' />Order Date<br/>
+            <input type="checkbox" name="_col[status]"  <?php if( isset($_col['status']) ):?>checked<?php endif;?> value='1' />Status<br/>
+            <input type="checkbox" name="_col[sku]"  <?php if( isset($_col['sku']) ):?>checked<?php endif;?> value='1' />Sku<br/>
+            <input type="checkbox" name="_col[customer_email]"  <?php if( isset($_col['customer_email']) ):?>checked<?php endif;?> value='1' />Customer Email<br/>
+            <input type="checkbox" name="_col[customer_group_id]"  <?php if( isset($_col['customer_group_id']) ):?>checked<?php endif;?> value='1' />Customer Group<br/>
+            <input type="checkbox" name="_col[country_id]"  <?php if( isset($_col['country_id']) ):?>checked<?php endif;?> value='1' />Country<br/>
+            <input type="checkbox" name="_col[region]"  <?php if( isset($_col['region']) ):?>checked<?php endif;?> value='1' />Region<br/>
+            <input type="checkbox" name="_col[city]"  <?php if( isset($_col['city']) ):?>checked<?php endif;?> value='1' />City<br/>
+            <input type="checkbox" name="_col[postcode]"  <?php if( isset($_col['postcode']) ):?>checked<?php endif;?> value='1' />Postcode<br/>
+            <input type="checkbox" name="_col[name]"  <?php if( isset($_col['name']) ):?>checked<?php endif;?> value='1' />Product Name<br/>
+            <input type="checkbox" name="_col[total_qty_ordered]"  <?php if( isset($_col['total_qty_ordered']) ):?>checked<?php endif;?> value='1' />Qty. Ordered<br/>
+            <input type="checkbox" name="_col[qty_invoiced]"  <?php if( isset($_col['qty_invoiced']) ):?>checked<?php endif;?> value='1' />Qty. Invoiced<br/>
+            <input type="checkbox" name="_col[qty_shipped]"  <?php if( isset($_col['qty_shipped']) ):?>checked<?php endif;?> value='1' />Qty. Shipped<br/>
+            <input type="checkbox" name="_col[qty_refunded]"  <?php if( isset($_col['qty_refunded']) ):?>checked<?php endif;?> value='1' />Qty. Refunded<br/>
+            <input type="checkbox" name="_col[subtotal]"  <?php if( isset($_col['subtotal']) ):?>checked<?php endif;?> value='1' />Subtotal<br/>
+            <input type="checkbox" name="_col[name]"  <?php if( isset($_col['name']) ):?>checked<?php endif;?> value='1' />Product Name<br/>
+            <input type="checkbox" name="_col[tax_amount]"  <?php if( isset($_col['tax_amount']) ):?>checked<?php endif;?> value='1' />Tax<br/>
+            <input type="checkbox" name="_col[discount_amount]"  <?php if( isset($_col['discount_amount']) ):?>checked<?php endif;?> value='1' />Discount<br/>
+            <input type="checkbox" name="_col[grand_total]"  <?php if( isset($_col['grand_total']) ):?>checked<?php endif;?> value='1' />Total<br/>
+            <input type="checkbox" name="_col[total_invoiced]"  <?php if( isset($_col['total_invoiced']) ):?>checked<?php endif;?> value='1' />Invoiced<br/>
+            <input type="checkbox" name="_col[total_refunded]"  <?php if( isset($_col['total_refunded']) ):?>checked<?php endif;?> value='1' />Refunded<br/>
+            <button class="scalable task"><span><span>Show Columns</span></span></button>
+        </form>
+        
+    </div>
+    
+
+<script type="text/javascript">
+(function($){
+	"use strict";
+
+	$(document).ready(function(){
+
+		$('.filter_col').on('click',function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			if($('.filter_col_block').is($(':visible'))){
+				$('.filter_col_block').hide();
+			}else{
+				$('.filter_col_block').show();	
+			}
+		});
+
+	});
+})(jQuery);
+</script>
+
+
+
+
+
+    
+</div>
+
+
+
+<?php if($this->getMassactionBlock()->isAvailable()): ?>
+<?php echo $this->getMassactionBlockHtml() ?>
+<?php endif ?>
+<div class="grid" style="min-height: <?php echo count($this->getCollection())*67?>px;">
+    <div class="hor-scroll">
+    <table cellspacing="0" class="data" id="<?php echo $this->getId() ?>_table" style="position: absolute;">
+        <?php foreach ($this->getColumns() as $_column): ?>
+        <col <?php echo $_column->getHtmlProperty() ?> />
+        <?php endforeach; ?>
+        <?php if ($this->getHeadersVisibility() || $this->getFilterVisibility()): ?>
+            <thead>
+                <?php if ($this->getHeadersVisibility()): ?>
+                    <tr class="headings">
+                    <?php foreach ($this->getColumns() as $_column): ?>
+                        <th<?php echo $_column->getHeaderHtmlProperty() ?>><span class="nobr"><?php echo $_column->getHeaderHtml() ?></span></th>
+                    <?php endforeach; ?>
+                    </tr>
+                <?php endif; ?>
+                <?php if ($this->getFilterVisibility()): ?>
+                    <tr class="filter">
+                    <?php $i=0;foreach ($this->getColumns() as $_column): ?>
+                        <th<?php echo $_column->getHeaderHtmlProperty() ?>><?php echo $_column->getFilterHtml() ?></th>
+                    <?php endforeach; ?>
+                    </tr>
+                <?php endif ?>
+            </thead>
+        <?php endif; ?>
+        <?php if(count($this->getCollection())): ?>
+            <?php
+                $today = date('Y-m-d', Mage::getModel('core/date')->timestamp(time()));
+                $resource = Mage::getSingleton('core/resource');       
+                $readConnection = $resource->getConnection('core_read');
+                $writeConnection = $resource->getConnection('core_write');
+                $requestData = Mage::helper('adminhtml')->prepareFilterString($this->getRequest()->getParam('filter'));                
+                if(count($requestData) == 0) {
+                    $storeIds = $this->getRequest()->getParam('store_ids');
+                    if($storeIds == null) {
+                        $collection = Mage::getModel('sales/order')->getCollection();
+                        $collection->addFieldToFilter('main_table.created_at', array('from' => $today));
+                        $collection->getSelect()->join(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'), 'main_table.billing_address_id = ' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'). '.entity_id',array('country_id', 'region', 'city', 'postcode', 'main_table.total_qty_ordered', 'main_table.subtotal', 'main_table.tax_amount', 'main_table.discount_amount', 'main_table.grand_total', 'main_table.total_invoiced', 'main_table.total_refunded'));
+                        $collection->join(
+                            'sales/order_item',
+                            '`sales/order_item`.order_id=`main_table`.entity_id',
+                            array(
+                                'skus'  => new Zend_Db_Expr('group_concat(`sales/order_item`.sku SEPARATOR ",")'),
+                                'names' => new Zend_Db_Expr('group_concat(`sales/order_item`.name SEPARATOR ",")'),
+                                'qty_invoiced',
+                                'qty_shipped',
+                                'qty_refunded',
+                                )
+                            );
+                        $collection->getSelect()->group('main_table.entity_id');
+                    } else {
+                        $arrStoreIds = explode(',', $storeIds);            
+                        $collection = Mage::getModel('sales/order')->getCollection();
+                        $collection->addFieldToFilter('main_table.created_at', array('from' => $today));
+                        $collection->getSelect()->join(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'), 'main_table.billing_address_id = ' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'). '.entity_id',array('country_id', 'region', 'city', 'postcode', 'main_table.total_qty_ordered', 'main_table.subtotal', 'main_table.tax_amount', 'main_table.discount_amount', 'main_table.grand_total', 'main_table.total_invoiced', 'main_table.total_refunded'));
+                        $collection->join(
+                            'sales/order_item',
+                            '`sales/order_item`.order_id=`main_table`.entity_id',
+                            array(
+                                'skus'  => new Zend_Db_Expr('group_concat(`sales/order_item`.sku SEPARATOR ",")'),
+                                'names' => new Zend_Db_Expr('group_concat(`sales/order_item`.name SEPARATOR ",")'),
+                                'qty_invoiced',
+                                'qty_shipped',
+                                'qty_refunded',
+                                )
+                            );
+                        $collection->getSelect()->group('main_table.entity_id');	    
+                        $collection->getSelect()->where('main_table.store_id IN(?)', $arrStoreIds);
+                    }
+                    $field_1 = 'Total';
+                    $field_2 = '';
+                    $field_3 = '';
+                    $field_4 = '';
+                    $field_5 = '';
+                    $field_6 = '';
+                    $field_7 = '';
+                    $field_8 = '';
+                    $field_9 = '';
+                    $field_10 = '';
+                    $field_11 = '';
+                    $field_12 = 0;
+                    $field_13 = 0;
+                    $field_14 = 0;
+                    $field_15 = 0;
+                    $field_16 = 0;
+                    $field_17 = 0;
+                    $field_18 = 0;                    
+                    $field_19 = 0;
+                    $field_20 = 0;
+                    $field_21 = 0;
+                    foreach($collection as $data) {
+                        $field_12 += $data->getTotalQtyOrdered();
+                        $field_13 += $data->getQtyInvoiced();
+                        $field_14 += $data->getQtyShipped();
+                        $field_15 += $data->getQtyRefunded();
+                        $field_16 += $data->getSubtotal();
+                        $field_17 += $data->getTaxAmount();
+                        $field_18 += $data->getDiscountAmount();
+                        $field_19 += $data->getGrandTotal();
+                        $field_20 += $data->getTotalInvoiced();
+                        $field_21 += $data->getTotalRefunded();
+                    }                    
+                    $delete = 'DELETE FROM ' . Mage::getSingleton('core/resource')->getTableName('xreports_salesreport');
+                    $writeConnection->query($delete);
+                    $insert = 'INSERT INTO ' . Mage::getSingleton('core/resource')->getTableName('xreports_salesreport') . ' (field_1, field_2, field_3, field_4, field_5, field_6, field_7, field_8, field_9, field_10, field_11, field_12, field_13, field_14, field_15, field_16, field_17, field_18, field_19, field_20, field_21) VALUES("'.$field_1.'", "'.$field_2.'", "'.$field_3.'", "'.$field_4.'", "'.$field_5.'", "'.$field_6.'", "'.$field_7.'", "'.$field_8.'", "'.$field_9.'", "'.$field_10.'", "'.$field_11.'", '.$field_12.', '.$field_13.', '.$field_14.', '.$field_15.', '.$field_16.', '.$field_17.', '.$field_18.', '.$field_19.', '.$field_20.', '.$field_21.')';
+                    $writeConnection->query($insert);
+                } else {
+                    $storeIds = $this->getRequest()->getParam('store_ids');
+                    if($storeIds == null) {
+                        $collection = Mage::getModel('sales/order')->getCollection();
+                        if(isset($requestData['increment_id']) && $requestData['increment_id'] != null) {
+                            $collection->addFieldToFilter('increment_id', array('like' => '%' . $requestData['increment_id'] . '%'));
+                        }
+                        if(count($requestData['created_at']) > 1) {
+                            $from = date('Y-m-d', strtotime($requestData['created_at']['from']));
+			    $to = date('Y-m-d', strtotime($requestData['created_at']['to']));
+                            if($requestData['created_at']['from'] != null && $requestData['created_at']['to'] != null) {
+                                $collection->addFieldToFilter('main_table.created_at', array('from' => $from, 'to' => $to));
+                            } else if($requestData['created_at']['from'] != null && $requestData['created_at']['to'] == null) {
+                                $collection->addFieldToFilter('main_table.created_at', array('from' => $from));
+                            } elseif($requestData['created_at']['from'] == null && $requestData['created_at']['to'] != null) {
+                                $collection->addFieldToFilter('main_table.created_at', array('to' => $to));
+                            }                            
+                        }
+                        if(isset($requestData['status']) && $requestData['status'] != null) {
+                            $collection->addFieldToFilter('status', array('eq' => $requestData['status']));
+                        }
+                        if(isset($requestData['sku']) && $requestData['sku'] != null) {
+                            $collection->addFieldToFilter('sku', array('like' => '%' . $requestData['sku'] . '%'));
+                        }
+                        if(isset($requestData['customer_email']) && $requestData['customer_email'] != null) {
+                            $collection->addFieldToFilter('customer_email', array('like' => '%' . $requestData['customer_email'] . '%'));
+                        }
+                        if(isset($requestData['customer_group_id']) && $requestData['customer_group_id'] != null) {
+                            $collection->addFieldToFilter('customer_group_id', array('eq' => $requestData['customer_group_id']));
+                        }
+                        $collection->getSelect()->join(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'), 'main_table.billing_address_id = ' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'). '.entity_id',array('country_id', 'region', 'city', 'postcode', 'main_table.total_qty_ordered', 'main_table.subtotal', 'main_table.tax_amount', 'main_table.discount_amount', 'main_table.grand_total', 'main_table.total_invoiced', 'main_table.total_refunded'));
+                        if(isset($requestData['country_id']) && $requestData['country_id'] != null) {
+                            $collection->addFieldToFilter('country_id', array('eq' => $requestData['country_id']));
+                        }
+                        if(isset($requestData['region']) && $requestData['region'] != null) {
+                            $collection->addFieldToFilter('region', array('like' => '%' . $requestData['region'] . '%'));
+                        }
+                        if(isset($requestData['city']) && $requestData['city'] != null) {
+                            $collection->addFieldToFilter('city', array('like' => '%' . $requestData['city'] . '%'));
+                        }
+                        if(isset($requestData['postcode']) && $requestData['postcode'] != null) {
+                            $collection->addFieldToFilter('postcode', array('like' => '%' . $requestData['postcode'] . '%'));
+                        }
+                        if(isset($requestData['name']) && $requestData['name'] != null) {
+                            $collection->addFieldToFilter('name', array('like' => '%' . $requestData['name'] . '%'));
+                        }
+                        if(isset($requestData['total_qty_ordered']) && $requestData['total_qty_ordered'] != null) {
+                            if($requestData['total_qty_ordered']['from'] != null && $requestData['total_qty_ordered']['to'] != null) {
+                                $collection->addFieldToFilter('total_qty_ordered', array('from' => $requestData['total_qty_ordered']['from'], 'to' => $requestData['total_qty_ordered']['to']));
+                            } else if($requestData['total_qty_ordered']['from'] != null && $requestData['total_qty_ordered']['to'] == null) {
+                                $collection->addFieldToFilter('total_qty_ordered', array('from' => $requestData['total_qty_ordered']['from']));
+                            } elseif($requestData['total_qty_ordered']['from'] == null && $requestData['total_qty_ordered']['to'] != null) {
+                                $collection->addFieldToFilter('total_qty_ordered', array('to' => $requestData['total_qty_ordered']['to']));
+                            }                            
+                        }
+                        if(isset($requestData['qty_invoiced']) && $requestData['qty_invoiced'] != null) {
+                            if($requestData['qty_invoiced']['from'] != null && $requestData['qty_invoiced']['to'] != null) {
+                                $collection->addFieldToFilter('qty_invoiced', array('from' => $requestData['qty_invoiced']['from'], 'to' => $requestData['qty_invoiced']['to']));
+                            } else if($requestData['qty_invoiced']['from'] != null && $requestData['qty_invoiced']['to'] == null) {
+                                $collection->addFieldToFilter('qty_invoiced', array('from' => $requestData['qty_invoiced']['from']));
+                            } elseif($requestData['qty_invoiced']['from'] == null && $requestData['qty_invoiced']['to'] != null) {
+                                $collection->addFieldToFilter('qty_invoiced', array('to' => $requestData['qty_invoiced']['to']));
+                            }                            
+                        }
+                        if(isset($requestData['qty_shipped']) && $requestData['qty_shipped'] != null) {
+                            if($requestData['qty_shipped']['from'] != null && $requestData['qty_shipped']['to'] != null) {
+                                $collection->addFieldToFilter('qty_shipped', array('from' => $requestData['qty_shipped']['from'], 'to' => $requestData['qty_shipped']['to']));
+                            } else if($requestData['qty_shipped']['from'] != null && $requestData['qty_shipped']['to'] == null) {
+                                $collection->addFieldToFilter('qty_shipped', array('from' => $requestData['qty_shipped']['from']));
+                            } elseif($requestData['qty_shipped']['from'] == null && $requestData['qty_shipped']['to'] != null) {
+                                $collection->addFieldToFilter('qty_shipped', array('to' => $requestData['qty_shipped']['to']));
+                            }                            
+                        }
+                        if(isset($requestData['qty_refunded']) && $requestData['qty_refunded'] != null) {
+                            if($requestData['qty_refunded']['from'] != null && $requestData['qty_refunded']['to'] != null) {
+                                $collection->addFieldToFilter('qty_refunded', array('from' => $requestData['qty_refunded']['from'], 'to' => $requestData['qty_refunded']['to']));
+                            } else if($requestData['qty_refunded']['from'] != null && $requestData['qty_refunded']['to'] == null) {
+                                $collection->addFieldToFilter('qty_refunded', array('from' => $requestData['qty_refunded']['from']));
+                            } elseif($requestData['qty_refunded']['from'] == null && $requestData['qty_refunded']['to'] != null) {
+                                $collection->addFieldToFilter('qty_refunded', array('to' => $requestData['qty_refunded']['to']));
+                            }                            
+                        }
+                        if(isset($requestData['subtotal']) && $requestData['subtotal'] != null) {
+                            if($requestData['subtotal']['from'] != null && $requestData['subtotal']['to'] != null) {
+                                $collection->addFieldToFilter('subtotal', array('from' => $requestData['subtotal']['from'], 'to' => $requestData['subtotal']['to']));
+                            } else if($requestData['subtotal']['from'] != null && $requestData['subtotal']['to'] == null) {
+                                $collection->addFieldToFilter('subtotal', array('from' => $requestData['subtotal']['from']));
+                            } elseif($requestData['subtotal']['from'] == null && $requestData['subtotal']['to'] != null) {
+                                $collection->addFieldToFilter('subtotal', array('to' => $requestData['subtotal']['to']));
+                            }                            
+                        }
+                        if(isset($requestData['tax_amount']) && $requestData['tax_amount'] != null) {
+                            if($requestData['tax_amount']['from'] != null && $requestData['tax_amount']['to'] != null) {
+                                $collection->addFieldToFilter('main_table.tax_amount', array('from' => $requestData['tax_amount']['from'], 'to' => $requestData['tax_amount']['to']));
+                            } else if($requestData['tax_amount']['from'] != null && $requestData['tax_amount']['to'] == null) {
+                                $collection->addFieldToFilter('main_table.tax_amount', array('from' => $requestData['tax_amount']['from']));
+                            } elseif($requestData['tax_amount']['from'] == null && $requestData['tax_amount']['to'] != null) {
+                                $collection->addFieldToFilter('main_table.tax_amount', array('to' => $requestData['tax_amount']['to']));
+                            }                            
+                        }
+                        if(isset($requestData['discount_amount']) && $requestData['discount_amount'] != null) {
+                            if($requestData['discount_amount']['from'] != null && $requestData['discount_amount']['to'] != null) {
+                                $collection->addFieldToFilter('main_table.discount_amount', array('from' => $requestData['discount_amount']['from'], 'to' => $requestData['discount_amount']['to']));
+                            } else if($requestData['discount_amount']['from'] != null && $requestData['discount_amount']['to'] == null) {
+                                $collection->addFieldToFilter('main_table.discount_amount', array('from' => $requestData['discount_amount']['from']));
+                            } elseif($requestData['discount_amount']['from'] == null && $requestData['discount_amount']['to'] != null) {
+                                $collection->addFieldToFilter('main_table.discount_amount', array('to' => $requestData['discount_amount']['to']));
+                            }                            
+                        }
+                        if(isset($requestData['grand_total']) && $requestData['grand_total'] != null) {
+                            if($requestData['grand_total']['from'] != null && $requestData['grand_total']['to'] != null) {
+                                $collection->addFieldToFilter('grand_total', array('from' => $requestData['grand_total']['from'], 'to' => $requestData['grand_total']['to']));
+                            } else if($requestData['grand_total']['from'] != null && $requestData['grand_total']['to'] == null) {
+                                $collection->addFieldToFilter('grand_total', array('from' => $requestData['grand_total']['from']));
+                            } elseif($requestData['grand_total']['from'] == null && $requestData['grand_total']['to'] != null) {
+                                $collection->addFieldToFilter('grand_total', array('to' => $requestData['grand_total']['to']));
+                            }                            
+                        }                        
+                        $collection->join(
+                            'sales/order_item',
+                            '`sales/order_item`.order_id=`main_table`.entity_id',
+                            array(
+                                'skus'  => new Zend_Db_Expr('group_concat(`sales/order_item`.sku SEPARATOR ",")'),
+                                'names' => new Zend_Db_Expr('group_concat(`sales/order_item`.name SEPARATOR ",")'),
+                                'qty_invoiced',
+                                'qty_shipped',
+                                'qty_refunded',
+                                )
+                            );
+                        $collection->getSelect()->group('main_table.entity_id');
+                    } else {
+                        $arrStoreIds = explode(',', $storeIds);            
+                        $collection = Mage::getModel('sales/order')->getCollection();
+                        if(isset($requestData['increment_id']) && $requestData['increment_id'] != null) {
+                            $collection->addFieldToFilter('increment_id', array('like' => '%' . $requestData['increment_id'] . '%'));
+                        }
+                        if(count($requestData['created_at']) > 1) {
+                            $from = date('Y-m-d', strtotime($requestData['created_at']['from']));
+                            $to = date('Y-m-d', strtotime($requestData['created_at']['to']));
+                            if($requestData['created_at']['from'] != null && $requestData['created_at']['to'] != null) {
+                                $collection->addFieldToFilter('main_table.created_at', array('from' => $from, 'to' => $to));
+                            } else if($requestData['created_at']['from'] != null && $requestData['created_at']['to'] == null) {
+                                $collection->addFieldToFilter('main_table.created_at', array('from' => $from));
+                            } elseif($requestData['created_at']['from'] == null && $requestData['created_at']['to'] != null) {
+                                $collection->addFieldToFilter('main_table.created_at', array('to' => $to));
+                            }                            
+                        }
+                        if(isset($requestData['status']) && $requestData['status'] != null) {
+                            $collection->addFieldToFilter('status', array('eq' => $requestData['status']));
+                        }
+                        if(isset($requestData['sku']) && $requestData['sku'] != null) {
+                            $collection->addFieldToFilter('sku', array('like' => '%' . $requestData['sku'] . '%'));
+                        }
+                        if(isset($requestData['customer_email']) && $requestData['customer_email'] != null) {
+                            $collection->addFieldToFilter('customer_email', array('like' => '%' . $requestData['customer_email'] . '%'));
+                        }
+                        if(isset($requestData['customer_group_id']) && $requestData['customer_group_id'] != null) {
+                            $collection->addFieldToFilter('customer_group_id', array('eq' => $requestData['customer_group_id']));
+                        }
+                        $collection->getSelect()->join(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'), 'main_table.billing_address_id = ' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'). '.entity_id',array('country_id', 'region', 'city', 'postcode', 'main_table.total_qty_ordered', 'main_table.subtotal', 'main_table.tax_amount', 'main_table.discount_amount', 'main_table.grand_total', 'main_table.total_invoiced', 'main_table.total_refunded'));
+                        if(isset($requestData['country_id']) && $requestData['country_id'] != null) {
+                            $collection->addFieldToFilter('country_id', array('eq' => $requestData['country_id']));
+                        }
+                        if(isset($requestData['region']) && $requestData['region'] != null) {
+                            $collection->addFieldToFilter('region', array('like' => '%' . $requestData['region'] . '%'));
+                        }
+                        if(isset($requestData['city']) && $requestData['city'] != null) {
+                            $collection->addFieldToFilter('city', array('like' => '%' . $requestData['city'] . '%'));
+                        }
+                        if(isset($requestData['postcode']) && $requestData['postcode'] != null) {
+                            $collection->addFieldToFilter('postcode', array('like' => '%' . $requestData['postcode'] . '%'));
+                        }
+                        if(isset($requestData['name']) && $requestData['name'] != null) {
+                            $collection->addFieldToFilter('name', array('like' => '%' . $requestData['name'] . '%'));
+                        }
+                        if(isset($requestData['total_qty_ordered']) && $requestData['total_qty_ordered'] != null) {
+                            if($requestData['total_qty_ordered']['from'] != null && $requestData['total_qty_ordered']['to'] != null) {
+                                $collection->addFieldToFilter('total_qty_ordered', array('from' => $requestData['total_qty_ordered']['from'], 'to' => $requestData['total_qty_ordered']['to']));
+                            } else if($requestData['total_qty_ordered']['from'] != null && $requestData['total_qty_ordered']['to'] == null) {
+                                $collection->addFieldToFilter('total_qty_ordered', array('from' => $requestData['total_qty_ordered']['from']));
+                            } elseif($requestData['total_qty_ordered']['from'] == null && $requestData['total_qty_ordered']['to'] != null) {
+                                $collection->addFieldToFilter('total_qty_ordered', array('to' => $requestData['total_qty_ordered']['to']));
+                            }                            
+                        }
+                        if(isset($requestData['qty_invoiced']) && $requestData['qty_invoiced'] != null) {
+                            if($requestData['qty_invoiced']['from'] != null && $requestData['qty_invoiced']['to'] != null) {
+                                $collection->addFieldToFilter('qty_invoiced', array('from' => $requestData['qty_invoiced']['from'], 'to' => $requestData['qty_invoiced']['to']));
+                            } else if($requestData['qty_invoiced']['from'] != null && $requestData['qty_invoiced']['to'] == null) {
+                                $collection->addFieldToFilter('qty_invoiced', array('from' => $requestData['qty_invoiced']['from']));
+                            } elseif($requestData['qty_invoiced']['from'] == null && $requestData['qty_invoiced']['to'] != null) {
+                                $collection->addFieldToFilter('qty_invoiced', array('to' => $requestData['qty_invoiced']['to']));
+                            }                            
+                        }
+                        if(isset($requestData['qty_shipped']) && $requestData['qty_shipped'] != null) {
+                            if($requestData['qty_shipped']['from'] != null && $requestData['qty_shipped']['to'] != null) {
+                                $collection->addFieldToFilter('qty_shipped', array('from' => $requestData['qty_shipped']['from'], 'to' => $requestData['qty_shipped']['to']));
+                            } else if($requestData['qty_shipped']['from'] != null && $requestData['qty_shipped']['to'] == null) {
+                                $collection->addFieldToFilter('qty_shipped', array('from' => $requestData['qty_shipped']['from']));
+                            } elseif($requestData['qty_shipped']['from'] == null && $requestData['qty_shipped']['to'] != null) {
+                                $collection->addFieldToFilter('qty_shipped', array('to' => $requestData['qty_shipped']['to']));
+                            }                            
+                        }
+                        if(isset($requestData['qty_refunded']) && $requestData['qty_refunded'] != null) {
+                            if($requestData['qty_refunded']['from'] != null && $requestData['qty_refunded']['to'] != null) {
+                                $collection->addFieldToFilter('qty_refunded', array('from' => $requestData['qty_refunded']['from'], 'to' => $requestData['qty_refunded']['to']));
+                            } else if($requestData['qty_refunded']['from'] != null && $requestData['qty_refunded']['to'] == null) {
+                                $collection->addFieldToFilter('qty_refunded', array('from' => $requestData['qty_refunded']['from']));
+                            } elseif($requestData['qty_refunded']['from'] == null && $requestData['qty_refunded']['to'] != null) {
+                                $collection->addFieldToFilter('qty_refunded', array('to' => $requestData['qty_refunded']['to']));
+                            }                            
+                        }
+                        if(isset($requestData['subtotal']) && $requestData['subtotal'] != null) {
+                            if($requestData['subtotal']['from'] != null && $requestData['subtotal']['to'] != null) {
+                                $collection->addFieldToFilter('subtotal', array('from' => $requestData['subtotal']['from'], 'to' => $requestData['subtotal']['to']));
+                            } else if($requestData['subtotal']['from'] != null && $requestData['subtotal']['to'] == null) {
+                                $collection->addFieldToFilter('subtotal', array('from' => $requestData['subtotal']['from']));
+                            } elseif($requestData['subtotal']['from'] == null && $requestData['subtotal']['to'] != null) {
+                                $collection->addFieldToFilter('subtotal', array('to' => $requestData['subtotal']['to']));
+                            }                            
+                        }
+                        if(isset($requestData['tax_amount']) && $requestData['tax_amount'] != null) {
+                            if($requestData['tax_amount']['from'] != null && $requestData['tax_amount']['to'] != null) {
+                                $collection->addFieldToFilter('main_table.tax_amount', array('from' => $requestData['tax_amount']['from'], 'to' => $requestData['tax_amount']['to']));
+                            } else if($requestData['tax_amount']['from'] != null && $requestData['tax_amount']['to'] == null) {
+                                $collection->addFieldToFilter('main_table.tax_amount', array('from' => $requestData['tax_amount']['from']));
+                            } elseif($requestData['tax_amount']['from'] == null && $requestData['tax_amount']['to'] != null) {
+                                $collection->addFieldToFilter('main_table.tax_amount', array('to' => $requestData['tax_amount']['to']));
+                            }                            
+                        }
+                        if(isset($requestData['discount_amount']) && $requestData['discount_amount'] != null) {
+                            if($requestData['discount_amount']['from'] != null && $requestData['discount_amount']['to'] != null) {
+                                $collection->addFieldToFilter('main_table.discount_amount', array('from' => $requestData['discount_amount']['from'], 'to' => $requestData['discount_amount']['to']));
+                            } else if($requestData['discount_amount']['from'] != null && $requestData['discount_amount']['to'] == null) {
+                                $collection->addFieldToFilter('main_table.discount_amount', array('from' => $requestData['discount_amount']['from']));
+                            } elseif($requestData['discount_amount']['from'] == null && $requestData['discount_amount']['to'] != null) {
+                                $collection->addFieldToFilter('main_table.discount_amount', array('to' => $requestData['discount_amount']['to']));
+                            }                            
+                        }
+                        if(isset($requestData['grand_total']) && $requestData['grand_total'] != null) {
+                            if($requestData['grand_total']['from'] != null && $requestData['grand_total']['to'] != null) {
+                                $collection->addFieldToFilter('grand_total', array('from' => $requestData['grand_total']['from'], 'to' => $requestData['grand_total']['to']));
+                            } else if($requestData['grand_total']['from'] != null && $requestData['grand_total']['to'] == null) {
+                                $collection->addFieldToFilter('grand_total', array('from' => $requestData['grand_total']['from']));
+                            } elseif($requestData['grand_total']['from'] == null && $requestData['grand_total']['to'] != null) {
+                                $collection->addFieldToFilter('grand_total', array('to' => $requestData['grand_total']['to']));
+                            }                            
+                        }
+                        $collection->getSelect()->join(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'), 'main_table.billing_address_id = ' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'). '.entity_id',array('country_id', 'region', 'city', 'postcode', 'main_table.total_qty_ordered', 'main_table.subtotal', 'main_table.tax_amount', 'main_table.discount_amount', 'main_table.grand_total', 'main_table.total_invoiced', 'main_table.total_refunded'));
+                        $collection->join(
+                            'sales/order_item',
+                            '`sales/order_item`.order_id=`main_table`.entity_id',
+                            array(
+                                'skus'  => new Zend_Db_Expr('group_concat(`sales/order_item`.sku SEPARATOR ",")'),
+                                'names' => new Zend_Db_Expr('group_concat(`sales/order_item`.name SEPARATOR ",")'),
+                                'qty_invoiced',
+                                'qty_shipped',
+                                'qty_refunded',
+                                )
+                            );
+                        $collection->getSelect()->group('main_table.entity_id');	    
+                        $collection->getSelect()->where('main_table.store_id IN(?)', $arrStoreIds);
+                    }
+                    $field_1 = 'Total';
+                    $field_2 = '';
+                    $field_3 = '';
+                    $field_4 = '';
+                    $field_5 = '';
+                    $field_6 = '';
+                    $field_7 = '';
+                    $field_8 = '';
+                    $field_9 = '';
+                    $field_10 = '';
+                    $field_11 = '';                    
+                    $field_12 = 0;
+                    $field_13 = 0;
+                    $field_14 = 0;
+                    $field_15 = 0;
+                    $field_16 = 0;
+                    $field_17 = 0;
+                    $field_18 = 0;
+                    $field_19 = 0;
+                    $field_20 = 0;
+                    $field_21 = 0;
+                    foreach($collection as $data) {
+                        $field_12 += $data->getTotalQtyOrdered();
+                        $field_13 += $data->getQtyInvoiced();
+                        $field_14 += $data->getQtyShipped();
+                        $field_15 += $data->getQtyRefunded();
+                        $field_16 += $data->getSubtotal();
+                        $field_17 += $data->getTaxAmount();
+                        $field_18 += $data->getDiscountAmount();
+                        $field_19 += $data->getGrandTotal();
+                        $field_20 += $data->getTotalInvoiced();
+                        $field_21 += $data->getTotalRefunded();
+                    }                    
+                    $delete = 'DELETE FROM ' . Mage::getSingleton('core/resource')->getTableName('xreports_salesreport');
+                    $writeConnection->query($delete);
+                    $insert = 'INSERT INTO ' . Mage::getSingleton('core/resource')->getTableName('xreports_salesreport') . ' (field_1, field_2, field_3, field_4, field_5, field_6, field_7, field_8, field_9, field_10, field_11, field_12, field_13, field_14, field_15, field_16, field_17, field_18, field_19, field_20, field_21) VALUES("'.$field_1.'", "'.$field_2.'", "'.$field_3.'", "'.$field_4.'", "'.$field_5.'", "'.$field_6.'", "'.$field_7.'", "'.$field_8.'", "'.$field_9.'", "'.$field_10.'", "'.$field_11.'", '.$field_12.', '.$field_13.', '.$field_14.', '.$field_15.', '.$field_16.', '.$field_17.', '.$field_18.', '.$field_19.', '.$field_20.', '.$field_21.')';
+                    $writeConnection->query($insert);
+                }                
+            ?>
+            <?php if ($this->getCountTotals()): ?>
+                <tfoot>
+                    <tr class="totals">
+                    <?php
+                        $query = 'SELECT * FROM ' . Mage::getSingleton('core/resource')->getTableName('xreports_salesreport');            
+                        $results = $readConnection->fetchAll($query);
+                    ?>
+                    <?php foreach ($results as $r): ?>                        
+                        <th class=""><?php echo $r['field_1']?></th>
+                        <th class="" style="text-align: right;"><?php echo $r['field_2']?></th>
+                        <th class="" style="text-align: right;"><?php echo $r['field_3']?></th>
+                        <th class="" style="text-align: right;"><?php echo $r['field_4']?></th>
+                        <th class="" style="text-align: right;"><?php echo $r['field_5']?></th>
+                        <th class="" style="text-align: right;"><?php echo $r['field_6']?></th>
+                        <th class="" style="text-align: right;"><?php echo $r['field_7']?></th>
+                        <th class="" style="text-align: right;"><?php echo $r['field_8']?></th>
+                        <th class="" style="text-align: right;"><?php echo $r['field_9']?></th>
+                        <th class="" style="text-align: right;"><?php echo $r['field_10']?></th>
+                        <th class="" style="text-align: right;"><?php echo $r['field_11']?></th>
+                        <th class="" style="text-align: right;"><?php echo $r['field_12']?></th>
+                        <th class="" style="text-align: right;"><?php echo $r['field_13']?></th>
+                        <th class="" style="text-align: right;"><?php echo $r['field_14']?></th>
+                        <th class="" style="text-align: right;"><?php echo $r['field_15']?></th>
+                        <th class="" style="text-align: right;"><?php echo Mage::helper('core')->currency($r['field_16'],true,false); ?></th>
+                        <th class="" style="text-align: right;"><?php echo Mage::helper('core')->currency($r['field_17'],true,false); ?></th>
+                        <th class="" style="text-align: right;"><?php echo Mage::helper('core')->currency($r['field_18'],true,false); ?></th>
+                        <th class="" style="text-align: right;"><?php echo Mage::helper('core')->currency($r['field_19'],true,false); ?></th>
+                        <th class="" style="text-align: right;"><?php echo Mage::helper('core')->currency($r['field_20'],true,false); ?></th>
+                        <th class="" style="text-align: right;"><?php echo Mage::helper('core')->currency($r['field_21'],true,false); ?></th>
+                    <?php endforeach; ?>
+                    </tr>
+                </tfoot>
+            <?php endif; ?>
+        <?php endif; ?>
+
+        <tbody>
+        <?php if (($this->getCollection()->getSize()>0) && (!$this->getIsCollapsed())): ?>
+        <?php foreach ($this->getCollection() as $_index=>$_item): ?>
+            <tr title="<?php echo $this->getRowUrl($_item) ?>"<?php if ($_class = $this->getRowClass($_item)):?> class="<?php echo $_class; ?>"<?php endif;?> >
+            <?php $i=0;foreach ($this->getColumns() as $_column): ?>
+
+                <?php if ($this->shouldRenderCell($_item, $_column)):?>
+                    <?php $_rowspan = $this->getRowspan($_item, $_column);?>
+                    <td <?php echo ($_rowspan ? 'rowspan="' . $_rowspan . '" ' : '') ?>class="<?php echo $_column->getCssProperty() ?> <?php echo ++$i==$numColumns?'last':'' ?>">
+                        <?php echo (($_html = $_column->getRowField($_item)) != '' ? $_html : '&nbsp;') ?>
+                    </td>
+                    <?php if ($this->shouldRenderEmptyCell($_item, $_column)):?>
+                        <td colspan="<?php echo $this->getEmptyCellColspan($_item)?>" class="last"><?php echo $this->getEmptyCellLabel()?></td>
+                    <?php endif;?>
+                <?php endif;?>
+
+            <?php endforeach; ?>
+            </tr>
+            <?php if ($_multipleRows = $this->getMultipleRows($_item)):?>
+                <?php foreach ($_multipleRows as $_i):?>
+                <tr>
+                    <?php $i=0;foreach ($this->getMultipleRowColumns($_i) as $_column): ?>
+                        <td class="<?php echo $_column->getCssProperty() ?> <?php echo ++$i==$numColumns-1?'last':'' ?>">
+                            <?php echo (($_html = $_column->getRowField($_i)) != '' ? $_html : '&nbsp;') ?>
+                        </td>
+                    <?php endforeach; ?>
+                </tr>
+                <?php endforeach;?>
+            <?php endif;?>
+
+            <?php if ($this->shouldRenderSubTotal($_item)): ?>
+                <tr class="subtotals">
+                    <?php $i = 0; foreach ($this->getSubTotalColumns() as $_column): ?>
+                        <td class="<?php echo $_column->getCssProperty() ?> <?php echo ++$i == $numColumns ? 'last' : '' ?>">
+                            <?php echo ($_column->hasSubtotalsLabel() ? $_column->getSubtotalsLabel() :
+                                $_column->getRowField($this->getSubTotalItem($_item))
+                            );
+                            ?>
+                        </td>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endif; ?>
+        <?php endforeach; ?>
+        <?php elseif ($this->getEmptyText()): ?>
+            <tr>
+                <td class="empty-text <?php echo $this->getEmptyTextClass() ?>" colspan="<?php echo $numColumns ?>"><?php echo $this->getEmptyText() ?></td>
+            </tr>
+        <?php endif; ?>
+        </tbody>
+
+    </table>
+    </div>
+</div>
+<?php if($this->canDisplayContainer()): ?>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+    <?php echo $this->getJsObjectName() ?> = new varienGrid('<?php echo $this->getId() ?>', '<?php echo $this->getGridUrl() ?>', '<?php echo $this->getVarNamePage() ?>', '<?php echo $this->getVarNameSort() ?>', '<?php echo $this->getVarNameDir() ?>', '<?php echo $this->getVarNameFilter() ?>');
+    <?php echo $this->getJsObjectName() ?>.useAjax = '<?php echo $this->getUseAjax() ?>';
+    <?php if($this->getRowClickCallback()): ?>
+        <?php echo $this->getJsObjectName() ?>.rowClickCallback = <?php echo $this->getRowClickCallback() ?>;
+    <?php endif; ?>
+    <?php if($this->getCheckboxCheckCallback()): ?>
+        <?php echo $this->getJsObjectName() ?>.checkboxCheckCallback = <?php echo $this->getCheckboxCheckCallback() ?>;
+    <?php endif; ?>
+    <?php if($this->getRowInitCallback()): ?>
+        <?php echo $this->getJsObjectName() ?>.initRowCallback = <?php echo $this->getRowInitCallback() ?>;
+        <?php echo $this->getJsObjectName() ?>.initGridRows();
+    <?php endif; ?>
+    <?php if($this->getMassactionBlock()->isAvailable()): ?>
+    <?php echo $this->getMassactionBlock()->getJavaScript() ?>
+    <?php endif ?>
+    <?php echo $this->getAdditionalJavaScript(); ?>
+//]]>
+</script>
+<?php endif; ?>
+<?php endif ?>
+<script type="text/javascript">
+//<![CDATA[
+    function setCreatedAtFrom(value) {        
+        document.getElementsByName('created_at[from]')[0].setValue(value);
+    }
+    function setCreatedAtTo(value) {
+        document.getElementsByName('created_at[to]')[0].setValue(value);        
+    }
+    function switchCustomDateRange(type) {
+        var keys = [
+            'today',
+            'yesterday',
+            'last_7_days',
+            'last_week',
+            'last_business_week',
+            'this_month',
+            'last_month',
+            'first_to_last'
+        ]; 
+        var from_dates = [            
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time())); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time() - (60*60*24))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time() - (60*60*24*6))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(strtotime('last week'))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(strtotime('last week') + (60*60*24))); ?>',
+            '<?php echo date('01-m-Y'); ?>',
+            '<?php $lastMonth=date('m')-1; $year=date('Y'); echo '01-' . $lastMonth.'-'.$year; ?>',
+            '<?php echo $firstItemCreatedAt; ?>'
+        ];
+        var to_dates = [            
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time())); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time() - (60*60*24))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time())); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(strtotime('last week') + (60*60*24*6))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(strtotime('last week') + (60*60*24*5))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time())); ?>',
+            '<?php $lastMonth=date('m')-1; $year=date('Y'); $lastDateOfMonth=date('t',$lastMonth); echo $lastDateOfMonth . '-' . $lastMonth . '-'.$year; ?>',
+            '<?php echo $lastItemCreatedAt; ?>'
+        ];
+        var date_range = $('custom_date_range');
+        var date_from = $('period_date_from');
+        var date_to = $('period_date_to');
+        var value = date_range.getValue();
+        if (value != 'custom') {
+            var i;
+            for (i = 0; i < keys.length; i++) {
+                if (keys[i] == value) {
+                    date_from.setValue(from_dates[i]);
+                    date_to .setValue(to_dates[i]);
+                    document.getElementsByName('created_at[from]')[0].setValue(from_dates[i]);
+                    document.getElementsByName('created_at[to]')[0].setValue(to_dates[i]);
+                }
+            }
+        } else {
+            date_from.setValue(null);
+            date_to .setValue(null);
+            document.getElementsByName('created_at[from]')[0].setValue(null);
+            document.getElementsByName('created_at[to]')[0].setValue(null);
+        }
+    }
+//]]>
+</script>
+<script type="text/javascript">
+//<![CDATA[
+    document.observe('dom:loaded', function() {        
+        var from_dates = [            
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time())); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time() - (60*60*24))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time() - (60*60*24*6))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(strtotime('last week'))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(strtotime('last week') + (60*60*24))); ?>',
+            '<?php echo date('01-m-Y'); ?>',
+            '<?php $lastMonth=date('m')-1; $year=date('Y'); echo '01-' . $lastMonth.'-'.$year; ?>',
+            '<?php echo $firstItemCreatedAt; ?>'
+        ];        
+        var date_range = $('custom_date_range');
+        var date_from = $('period_date_from');        
+        var value = date_from.getValue();
+        if (value == '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time())); ?>') {
+            date_range.setValue('today');
+        } else if(value == '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time() - (60*60*24))); ?>') {
+            date_range.setValue('yesterday');
+        } else if(value == '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time() - (60*60*24*6))); ?>') {
+            date_range.setValue('last_7_days');
+        } else if(value == '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(strtotime('last week'))); ?>') {
+            date_range.setValue('last_week');
+        } else if(value == '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(strtotime('last week') + (60*60*24))); ?>') {
+            date_range.setValue('last_business_week');
+        } else if(value == '<?php echo date('01-m-Y'); ?>') {
+            date_range.setValue('this_month');
+        } else if(value == '<?php $lastMonth=date('m')-1; $year=date('Y'); echo '01-' . $lastMonth.'-'.$year; ?>') {
+            date_range.setValue('last_month');
+        } else if(value == '<?php echo $firstItemCreatedAt; ?>') {
+            date_range.setValue('first_to_last');
+        } else {
+            date_range.setValue('custom');
+        }
+    });
+//]]>
+</script>
+<?php if(count($requestData) == 0): ?>
+<script type="text/javascript">
+    //<![CDATA[
+        document.observe("dom:loaded", function() {                        
+            $('custom_date_range').setValue('today');
+            $('period_date_from').value = '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time())); ?>';
+            $('period_date_to').value = '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time())); ?>';
+        });
+    //]]>
+</script>
+<?php endif; ?>

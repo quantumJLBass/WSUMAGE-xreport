@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+
+<layout version="0.1.0">    
+    <xreports_adminhtml_report_salesbycustomergroup>
+        <reference name="messages">
+            <action method="addNotice" translate="message">
+                <message>This report depends on timezone configuration. Once timezone is changed, the lifetime statistics need to be refreshed.</message>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="xreports/adminhtml_report_salesbycustomergroup" template="wsu/xreports/report/salesbycustomergroup/grid/container.phtml" name="xreports.report.salesbycustomergroup">
+                <block type="adminhtml/store_switcher" template="report/store/switcher/enhanced.phtml" name="store.switcher">
+                    <action method="setStoreVarName">
+                        <var_name>store_ids</var_name>
+                    </action>
+                </block>
+                <block type="xreports/adminhtml_report_salesbycustomergroup_filter_form" name="grid.filter.form">
+                    <action method="setFieldVisibility">
+                        <field>report_type</field>
+                        <visibility>0</visibility>
+                    </action>
+                </block>
+            </block>
+        </reference>
+    </xreports_adminhtml_report_salesbycustomergroup>
+    <xreports_adminhtml_report_salesbycountry>
+        <reference name="messages">
+            <action method="addNotice" translate="message">
+                <message>This report depends on timezone configuration. Once timezone is changed, the lifetime statistics need to be refreshed.</message>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="xreports/adminhtml_report_salesbycountry" template="wsu/xreports/report/salesbycountry/grid/container.phtml" name="xreports.report.salesbycountry">
+                <block type="adminhtml/store_switcher" template="report/store/switcher/enhanced.phtml" name="store.switcher">
+                    <action method="setStoreVarName">
+                        <var_name>store_ids</var_name>
+                    </action>
+                </block>
+                <block type="xreports/adminhtml_report_salesbycountry_filter_form" name="grid.filter.form">
+                    <action method="setFieldVisibility">
+                        <field>report_type</field>
+                        <visibility>0</visibility>
+                    </action>
+                </block>
+            </block>
+        </reference>
+    </xreports_adminhtml_report_salesbycountry>
+    <xreports_adminhtml_report_salesbycouponcode>
+        <reference name="messages">
+            <action method="addNotice" translate="message">
+                <message>This report depends on timezone configuration. Once timezone is changed, the lifetime statistics need to be refreshed.</message>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="xreports/adminhtml_report_salesbycouponcode" template="wsu/xreports/report/salesbycouponcode/grid/container.phtml" name="xreports.report.salesbycouponcode">
+                <block type="adminhtml/store_switcher" template="report/store/switcher/enhanced.phtml" name="store.switcher">
+                    <action method="setStoreVarName">
+                        <var_name>store_ids</var_name>
+                    </action>
+                </block>
+                <block type="xreports/adminhtml_report_salesbycouponcode_filter_form" name="grid.filter.form">
+                    <action method="setFieldVisibility">
+                        <field>report_type</field>
+                        <visibility>0</visibility>
+                    </action>
+                </block>
+            </block>
+        </reference>
+    </xreports_adminhtml_report_salesbycouponcode>
+    <!--<xreports_adminhtml_report_salesreport>
+        <reference name="messages">
+            <action method="addNotice" translate="message">
+                <message>This report depends on timezone configuration. Once timezone is changed, the lifetime statistics need to be refreshed.</message>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="xreports/adminhtml_report_salesreport" template="wsu/xreports/report/salesreport/grid/container.phtml" name="xreports.report.salesreport">
+                <block type="adminhtml/store_switcher" template="report/store/switcher/enhanced.phtml" name="store.switcher">
+                    <action method="setStoreVarName"><var_name>store_ids</var_name></action>
+                </block>
+                <block type="xreports/adminhtml_report_salesreport_filter_form" name="grid.filter.form">
+                    <action method="setFieldVisibility">
+                        <field>report_type</field>
+                        <visibility>0</visibility>
+                    </action>
+                </block>
+            </block>
+        </reference>
+    </xreports_adminhtml_report_salesreport>-->
+    <xreports_adminhtml_report_salesbyproduct>
+        <reference name="messages">
+            <action method="addNotice" translate="message">
+                <message>This report depends on timezone configuration. Once timezone is changed, the lifetime statistics need to be refreshed.</message>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="xreports/adminhtml_report_salesbyproduct" template="wsu/xreports/report/salesbyproduct/grid/container.phtml" name="xreports.report.salesbyproduct">
+                <block type="adminhtml/store_switcher" template="report/store/switcher/enhanced.phtml" name="store.switcher">
+                    <action method="setStoreVarName">
+                        <var_name>store_ids</var_name>
+                    </action>
+                </block>
+                <block type="xreports/adminhtml_report_salesbyproduct_filter_form" name="grid.filter.form">
+                    <action method="setFieldVisibility">
+                        <field>report_type</field>
+                        <visibility>0</visibility>
+                    </action>
+                </block>
+            </block>
+        </reference>
+    </xreports_adminhtml_report_salesbyproduct>
+    <xreports_adminhtml_report_salesbyhour>
+        <reference name="messages">
+            <action method="addNotice" translate="message">
+                <message>This report depends on timezone configuration. Once timezone is changed, the lifetime statistics need to be refreshed.</message>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="xreports/adminhtml_report_salesbyhour" template="wsu/xreports/report/salesbyhour/grid/container.phtml" name="xreports.report.salesbyhour">
+                <block type="adminhtml/store_switcher" template="report/store/switcher/enhanced.phtml" name="store.switcher">
+                    <action method="setStoreVarName">
+                        <var_name>store_ids</var_name>
+                    </action>
+                </block>
+                <block type="xreports/adminhtml_report_salesbyhour_filter_form" name="grid.filter.form">
+                    <action method="setFieldVisibility">
+                        <field>report_type</field>
+                        <visibility>0</visibility>
+                    </action>
+                </block>
+            </block>
+        </reference>
+    </xreports_adminhtml_report_salesbyhour>
+    <xreports_adminhtml_report_salesbydayofweek>
+        <reference name="messages">
+            <action method="addNotice" translate="message">
+                <message>This report depends on timezone configuration. Once timezone is changed, the lifetime statistics need to be refreshed.</message>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="xreports/adminhtml_report_salesbydayofweek" template="wsu/xreports/report/salesbydayofweek/grid/container.phtml" name="xreports.report.salesbydayofweek">
+                <block type="adminhtml/store_switcher" template="report/store/switcher/enhanced.phtml" name="store.switcher">
+                    <action method="setStoreVarName">
+                        <var_name>store_ids</var_name>
+                    </action>
+                </block>
+                <block type="xreports/adminhtml_report_salesbydayofweek_filter_form" name="grid.filter.form">
+                    <action method="setFieldVisibility">
+                        <field>report_type</field>
+                        <visibility>0</visibility>
+                    </action>
+                </block>
+            </block>
+        </reference>
+    </xreports_adminhtml_report_salesbydayofweek>
+    <xreports_adminhtml_report_salesbynewandreturning>
+        <reference name="messages">
+            <action method="addNotice" translate="message">
+                <message>This report depends on timezone configuration. Once timezone is changed, the lifetime statistics need to be refreshed.</message>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="xreports/adminhtml_report_salesbynewandreturning" template="wsu/xreports/report/salesbynewandreturning/grid/container.phtml" name="xreports.report.salesbynewandreturning">
+                <block type="adminhtml/store_switcher" template="report/store/switcher/enhanced.phtml" name="store.switcher">
+                    <action method="setStoreVarName">
+                        <var_name>store_ids</var_name>
+                    </action>
+                </block>
+                <block type="xreports/adminhtml_report_salesbynewandreturning_filter_form" name="grid.filter.form">
+                    <action method="setFieldVisibility">
+                        <field>report_type</field>
+                        <visibility>0</visibility>
+                    </action>
+                </block>
+            </block>
+        </reference>
+    </xreports_adminhtml_report_salesbynewandreturning>
+</layout>

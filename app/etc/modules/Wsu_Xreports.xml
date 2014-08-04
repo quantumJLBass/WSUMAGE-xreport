@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<config>
+    <modules>
+        <Wsu_Xreports>
+            <active>true</active>
+            <codePool>local</codePool>
+        </Wsu_Xreports>
+    </modules>
+</config> 
