@@ -323,15 +323,16 @@ $_col = $this->getRequest()->getParam('_col');
                             $collection->addFieldToFilter('increment_id', array('like' => '%' . $requestData['increment_id'] . '%'));
                         }
                         if(count($requestData['created_at']) > 1) {
-                            $from = date('Y-m-d', strtotime($requestData['created_at']['from']));
-			    $to = date('Y-m-d', strtotime($requestData['created_at']['to']));
-                            if($requestData['created_at']['from'] != null && $requestData['created_at']['to'] != null) {
+                            $from = date('Y-m-d', strtotime(isset($requestData['created_at']['from'])?$requestData['created_at']['from']:"-1 year"));
+			    			$to = date('Y-m-d', strtotime(isset($requestData['created_at']['to'])?$requestData['created_at']['to']:"now"));
+							$collection->addFieldToFilter('main_table.created_at', array('from' => $from, 'to' => $to));
+                            /*if($requestData['created_at']['from'] != null && $requestData['created_at']['to'] != null) {
                                 $collection->addFieldToFilter('main_table.created_at', array('from' => $from, 'to' => $to));
                             } else if($requestData['created_at']['from'] != null && $requestData['created_at']['to'] == null) {
                                 $collection->addFieldToFilter('main_table.created_at', array('from' => $from));
                             } elseif($requestData['created_at']['from'] == null && $requestData['created_at']['to'] != null) {
                                 $collection->addFieldToFilter('main_table.created_at', array('to' => $to));
-                            }                            
+                            } */                           
                         }
                         if(isset($requestData['status']) && $requestData['status'] != null) {
                             $collection->addFieldToFilter('status', array('eq' => $requestData['status']));
