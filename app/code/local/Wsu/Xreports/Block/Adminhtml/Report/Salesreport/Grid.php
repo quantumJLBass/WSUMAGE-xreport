@@ -90,6 +90,9 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Grid extends Mage_Adminhtm
 		$_col = $this->getRequest()->getParam('_col');
 		$_col = Mage::getSingleton('core/session')->getFilteredCol();
 		$post_col = $this->getRequest()->getParam('_col');
+		
+		$currencyCode = $this->getCurrentCurrencyCode();
+		
 		if(!empty($post_col)){
 			$_col = $post_col;
 			Mage::getSingleton('core/session')->setFilteredCol($_col);
@@ -287,9 +290,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Grid extends Mage_Adminhtm
 			));
 		}
 		
-		if(empty($_col) || isset($_col['subtotal'])){	
-			$currencyCode = $this->getCurrentCurrencyCode();
-	
+		if(empty($_col) || isset($_col['subtotal'])){
 			$this->addColumn('subtotal', array(
 				'header' => Mage::helper('xreports')->__('Subtotal'),
 				'align' => 'right',
