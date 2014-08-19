@@ -150,7 +150,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Grid extends Mage_Adminhtm
 
 		
 		if(empty($_col) || isset($_col['dyno_options'])){
-			$this->addColumn('customer_email', array(
+			$this->addColumn('dyno_options', array(
 				'header' => Mage::helper('xreports')->__('Item options'),
 				'align' => 'left',
 				'width' => '250',
