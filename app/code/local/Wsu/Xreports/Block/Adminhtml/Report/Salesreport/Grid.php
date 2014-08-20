@@ -83,6 +83,11 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Grid extends Mage_Adminhtm
             }
         }
         $this->setCollection($collection);
+		
+		
+		var_dump(Mage::registry('csv_export'));
+		
+		
         return parent::_prepareCollection();
     }
 
@@ -101,6 +106,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Grid extends Mage_Adminhtm
 			$_col=array();
 		}/**/
 		
+
 		//*/
 		//var_dump($_col);
 		if(empty($_col) || isset($_col['increment_id'])){
