@@ -565,6 +565,58 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
         $this->_prepareDownloadResponse($fileName, $grid->getExcelFile($fileName));
     }
 
+
+
+
+
+
+
+
+
+
+    public function guestReportAction() {
+            $this->_title($this->__('xReports'))->_title($this->__('Guest Report'));
+			if((Mage::registry('csv_export')!=true)){ Mage::register('csv_export', false); }
+            $this->_initAction()
+                    ->_setActiveMenu('report/xreports')
+                    ->_addBreadcrumb(Mage::helper('xreports')->__('Guest Report'), Mage::helper('xreports')->__('Guest Report'))
+                    ->_addContent($this->getLayout()->createBlock('xreports/adminhtml_report_guestreport'));
+            $this->renderLayout();
+			Mage::unregister('csv_export');
+    }
+
+    public function exportGuestReportCsvAction() {
+        $fileName = 'guest_report.csv';
+		Mage::register('csv_export', true);
+        $grid = $this->getLayout()->createBlock('xreports/adminhtml_report_guestreport');
+        $this->_initReportAction($grid);
+		
+        $this->_prepareDownloadResponse($fileName, $grid->getCsvFile($fileName));
+    }
+
+    public function exportGuestReportExcelAction() {
+        $fileName = 'guest_report.xml';
+        $grid = $this->getLayout()->createBlock('xreports/adminhtml_report_guestreport');
+        $this->_initReportAction($grid);
+        $this->_prepareDownloadResponse($fileName, $grid->getExcelFile($fileName));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public function getSkusAction() {
         $data = $this->getRequest()->getPost();
         foreach ($data as $key => $value) {

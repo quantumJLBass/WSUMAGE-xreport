@@ -32,6 +32,11 @@
 							<sort_order>3</sort_order>
 							<action>xreports/adminhtml_report/salesreport</action>
 						</salesreport>
+						<guestreport translate="title" module="xreports">
+							<title>Guest Report</title>
+							<sort_order>3</sort_order>
+							<action>xreports/adminhtml_report/guestreport</action>
+						</guestreport>
 						<salesbyproduct translate="title" module="xreports">
 							<title>Sales by Product</title>
 							<sort_order>4</sort_order>
@@ -104,6 +109,11 @@
                                 <sort_order>3</sort_order>
                                 <action>xreports/adminhtml_report/salesreport</action>
                             </salesreport>
+                            <guestreport translate="title" module="xreports">
+                                <title>Guest Report</title>
+                                <sort_order>3</sort_order>
+                                <action>xreports/adminhtml_report/guestreport</action>
+                            </guestreport>
                             <salesbyproduct translate="title" module="xreports">
                                 <title>Sales by Product</title>
                                 <sort_order>4</sort_order>

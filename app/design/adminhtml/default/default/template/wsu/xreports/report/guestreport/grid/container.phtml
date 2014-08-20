@@ -1,0 +1,102 @@
+
+<div class="content-header">
+    <table cellspacing="0">
+        <tr>
+            <td style="<?php echo $this->getHeaderWidth() ?>"><?php echo $this->getHeaderHtml() ?></td>
+            <td class="form-buttons"><?php echo $this->getButtonsHtml() ?></td>
+        </tr>
+    </table>
+</div>
+<div>
+    <?php echo $this->getChildHtml('store.switcher') ?>
+</div>
+<div>
+    <?php echo $this->getChildHtml('grid.filter.form') ?>
+</div>
+
+
+
+
+<div>
+    <?php echo $this->getGridHtml() ?>
+</div>
+<?php
+$orderCollection = Mage::getModel('sales/order')
+        ->getCollection()
+        ->addAttributeToSelect('*');
+if (count($orderCollection) > 0) {
+    $firstItem = $orderCollection->getFirstItem();
+    $lastItem = $orderCollection->getLastItem();
+    $firstItemCreatedAt = date('d-m-Y', strtotime(Mage::helper('core')->formatDate($firstItem->getCreatedAt() . '- 2 days', 'short', false)));
+    $lastItemCreatedAt = date('d-m-Y', strtotime(Mage::helper('core')->formatDate($lastItem->getCreatedAt() . '+ 2 days', 'short', false)));
+}
+?>
+<script type="text/javascript">
+//<![CDATA[
+    function filterFormSubmit() {
+        var filters = $$('#filter_form input', '#filter_form select');
+        var elements = [];
+        for (var i in filters) {
+            if (filters[i].value && filters[i].value.length && !filters[i].disabled)
+                elements.push(filters[i]);
+        }
+        var validator = new Validation('filter_form');
+        if (validator.validate()) {
+            setLocation('<?php echo $this->getFilterUrl(); ?>filter/' + encode_base64(Form.serializeElements(elements)) + '/');
+        }
+    }
+    function switchCustomDateRange(type) {
+        var keys = [
+            'today',
+            'yesterday',
+            'last_7_days',
+            'last_week',
+            'last_business_week',
+            'this_month',
+            'last_month',
+            'first_to_last'
+        ];
+        var from_dates = [
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time())); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time() - (60 * 60 * 24))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time() - (60 * 60 * 24 * 6))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(strtotime('last week'))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(strtotime('last week') + (60 * 60 * 24))); ?>',
+            '<?php echo date('01-m-Y'); ?>',
+            '<?php $lastMonth = date('m') - 1;
+            $year = date('Y');
+            echo '01-' . $lastMonth . '-' . $year; ?>',
+            '<?php echo $firstItemCreatedAt; ?>'
+        ];
+        var to_dates = [
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time())); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time() - (60 * 60 * 24))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time())); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(strtotime('last week') + (60 * 60 * 24 * 6))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(strtotime('last week') + (60 * 60 * 24 * 5))); ?>',
+            '<?php echo date('d-m-Y', Mage::getModel('core/date')->timestamp(time())); ?>',
+            '<?php $lastMonth = date('m') - 1;
+            $year = date('Y');
+            $lastDateOfMonth = date('t', $lastMonth);
+            echo $lastDateOfMonth . '-' . $lastMonth . '-' . $year; ?>',
+            '<?php echo $lastItemCreatedAt; ?>'
+        ];
+        var date_range = $('sales_report_custom_date_range');
+        var date_from = $('sales_report_from');
+        var date_to = $('sales_report_to');
+        var value = date_range.getValue();
+        if (value != 'custom') {
+            var i;
+            for (i = 0; i < keys.length; i++) {
+                if (keys[i] == value) {
+                    date_from.setValue(from_dates[i]);
+                    date_to.setValue(to_dates[i]);
+                }
+            }
+        } else {
+            date_from.setValue(null);
+            date_to.setValue(null);
+        }
+    }
+//]]>
+</script>
