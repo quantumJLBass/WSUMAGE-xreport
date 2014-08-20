@@ -33,6 +33,43 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Renderer_Item extends Mage
 		  }
 		  $finalResult = array_merge($finalResult, $result);
 		}
+		$csv_export = Mage::registry('csv_export');
+		//var_dump($csv_export);
+		if($csv_export==true){
+			
+			$options=array();
+			$guestkeyarray=array();
+			$guestarray=array();
+			foreach ($finalResult as $_option){
+				$label = trim($this->escapeHtml($_option['label']));
+				$value = trim($_option['value']);
+				if ( $value!=="" && $label!=="" && strpos($label,'guest_')===false ){
+					$options[]=$label.':'.$value;
+				}
+				if ( $label!=="" && strpos($label,'guest_')!==false && strpos($label,'_{%d%}_')===false ){
+					preg_match('/_(?<digit>\d+)_/',$label, $matches);
+					$guestkeyarray[]=trim($matches[0],'_');
+					$guestarray[$label]=$value;
+				}
+			}
+
+			$guestkeyarray=array_unique($guestkeyarray);
+			
+			foreach ($guestkeyarray as $_opkey){
+				$firstname = isset($guestarray["guest_${_opkey}_firstName"])?$guestarray["guest_${_opkey}_firstName"]:"";
+				$lastname = isset($guestarray["guest_${_opkey}_lastName"])?$guestarray["guest_${_opkey}_lastName"]:"";
+				$options[]="Guest ${_opkey}:".$firstname." ".$lastname;
+			}
+			$html = implode(",\r\n", $options);
+			//$html = '"'.$str.'"';			
+		}else{
+		
+		
+		
+		
+		
+		
+		
 		ob_start();
    ?><?php if (!empty($finalResult)):?>
 				
@@ -150,7 +187,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Renderer_Item extends Mage
 		<?php
 		    
 		$html .= ob_get_clean(); 
-
+		}
         return $html;
     }
 

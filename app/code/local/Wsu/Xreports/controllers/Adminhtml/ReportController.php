@@ -136,7 +136,9 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
     public function salesReportAction() {
             $this->_title($this->__('xReports'))
                     ->_title($this->__('Sales Report'));
-			Mage::register('csv_export', false);
+			if((Mage::registry('csv_export')!=true)){
+				Mage::register('csv_export', false);
+			}
             $this->_initAction()
                     ->_setActiveMenu('report/xreports')
                     ->_addBreadcrumb(Mage::helper('xreports')->__('Sales Report'), Mage::helper('xreports')->__('Sales Report'))
@@ -150,7 +152,7 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
 		Mage::register('csv_export', true);
         $grid = $this->getLayout()->createBlock('xreports/adminhtml_report_salesreport_grid');
         $this->_initReportAction($grid);
-		Mage::unregister('csv_export');
+		
         $this->_prepareDownloadResponse($fileName, $grid->getCsvFile($fileName));
     }
 

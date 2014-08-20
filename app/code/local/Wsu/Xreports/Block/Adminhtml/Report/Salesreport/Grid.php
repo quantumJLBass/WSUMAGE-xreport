@@ -85,7 +85,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Grid extends Mage_Adminhtm
         $this->setCollection($collection);
 		
 		
-		var_dump(Mage::registry('csv_export'));
+		
 		
 		
         return parent::_prepareCollection();
@@ -165,10 +165,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Grid extends Mage_Adminhtm
 				'renderer' => 'Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Renderer_Item',
 				'sortable' => true
 			));
-		}
-
-
-		
+		}		
 		if(empty($_col) || isset($_col['customer_email'])){
 			$this->addColumn('customer_email', array(
 				'header' => Mage::helper('xreports')->__('Customer Email'),
