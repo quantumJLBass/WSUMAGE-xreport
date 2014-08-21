@@ -212,7 +212,7 @@ $_col = $this->getRequest()->getParam('_col');
 <?php endif ?>
 <div class="grid" style="min-height: <?php echo count($this->getCollection())*67?>px;">
     <div class="hor-scroll">
-    <table cellspacing="0" class="data" id="<?php echo $this->getId() ?>_table" style="position: absolute;">
+    <table cellspacing="0" class="data" id="<?php echo $this->getId() ?>_table">
         <?php foreach ($this->getColumns() as $_column): ?>
         <col <?php echo $_column->getHtmlProperty() ?> />
         <?php endforeach; ?>
