@@ -17,17 +17,16 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
     }
 
     protected function _prepareCollection() {
-		Mage::register( 'collection', Mage::helper('xreports')->_findCollection() );
 		$collection = Mage::registry('collection');
 		$this->setCollection($collection);
         return parent::_prepareCollection();
     }
 
 
-/*	
+
     protected function _addColumnFilterToCollection($column){
         $filterArr = Mage::registry('preparedFilter');
-        if (($column->getId() === 'store_id' || $column->getId() === 'status') 
+        /*if (($column->getId() === 'store_id' || $column->getId() === 'status') 
 			&& $column->getFilter()->getValue() && strpos($column->getFilter()->getValue(), ',')) {
             $_inNin = explode(',', $column->getFilter()->getValue());
             $inNin = array();
@@ -47,13 +46,33 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
             $this->getCollection()->addFieldToFilter($column->getId(), $filterArr[$column->getId()]);
         } else {
             parent::_addColumnFilterToCollection($column);
-        }
-		print((string)$this->getCollection()->getSelect());
-		var_dump($filterArr);
-        Zend_Debug::dump((string)$this->getCollection()->getSelect(), 'Prepared filter:');
+        }*/
+		
+		//print((string)$this->getCollection()->getSelect());
+		//var_dump($filterArr);
+        //Zend_Debug::dump((string)$this->getCollection()->getSelect(), 'Prepared filter:');
+		
+		/*
+		Mage::unregister('dyno_col'); 
+		Mage::register('dyno_col', Mage::helper('xreports')->dynoColCallback($this->getCollection()));
+		$newCollection = new Varien_Data_Collection();
+		$dyno_col=(array)Mage::registry('dyno_col');
+		
+		foreach($this->getCollection() as $item){
+			foreach($dyno_col as $keyed){
+				$item->setData("${keyed}",Mage::helper('xreports')->dynoColValue($item,$keyed));
+			 }
+			 $newCollection->addItem($item);
+		}
+		
+		$this->setCollection($newCollection);
+		var_dump($newCollection);
+		
+		die();*/
+
         return $this;
     }
-*/
+/*	*/
 
 
     protected function _prepareColumns() {
@@ -187,7 +206,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
     }
 
 	protected function _fromFilter($collection, $column) {
-        /*if (!$value = $column->getFilter()->getValue()) {
+        /* if (!$value = $column->getFilter()->getValue()) {
             return $this;
         }
 		
@@ -195,8 +214,17 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
 		
 		
 		if(isset($value['from'])){
-        	$this->getCollection()->getSelect()->where( "main_table.created_at >= ?" , $value['from']->toString('Y-m-d H:i:s') );
-		}*/
+        	//$this->getCollection()->getSelect()->where( "main_table.created_at >= ?" , $value['from']->toString('Y-m-d H:i:s') );
+		}
+		
+		
+		Format our dates */
+
+		
+		
+		
+		
+		
         return $this;
     }
 

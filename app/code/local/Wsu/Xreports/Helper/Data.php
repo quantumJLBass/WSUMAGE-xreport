@@ -24,75 +24,58 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 
 
 	public function _findCollection(){
-		
-		$today = date('Y-m-d', Mage::getModel('core/date')->timestamp(time()));
 		$request = Mage::app()->getRequest();
         $requestData = Mage::helper('adminhtml')->prepareFilterString($request->getParam('filter'));
+		
+		$collection = Mage::getModel('sales/order')->getCollection();
+
+		$fromDate = date('Y-m-d H:i:s', strtotime('now'));
+		$toDate = date('Y-m-d H:i:s', strtotime('now'));
+		if (!empty($requestData) && isset($requestData['created_at'])) {
+			if( isset($requestData['created_at']['from'])
+				 && strtotime($requestData['created_at']['from'].' 00:00:00' ) < strtotime('now')
+				 && strtotime($requestData['created_at']['from'].' 00:00:00' ) < strtotime($requestData['created_at']['to'].' 23:59:59' )
+			){
+				$fromDate=date('Y-m-d H:i:s', strtotime( $requestData['created_at']['from'].' 00:00:00' ));
+			}
+			if( isset($requestData['created_at']['to']) 
+			    && strtotime($requestData['created_at']['to'].' 23:59:59' )<strtotime('now')
+			){
+				$toDate=date('Y-m-d H:i:s', strtotime($requestData['created_at']['to'].' 23:59:59' ));
+			}
+		}
+		$collection->addAttributeToFilter('main_table.created_at', array('from'=>$fromDate,'to'=>$toDate));
+
+		$collection->getSelect()->join(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'), 'main_table.billing_address_id = ' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address') . '.entity_id', array('country_id', 'region', 'city', 'postcode', 'main_table.total_qty_ordered', 'main_table.subtotal', 'main_table.tax_amount', 'main_table.discount_amount', 'main_table.grand_total', 'main_table.total_invoiced', 'main_table.total_refunded'));
+		$collection->join(
+				'sales/order_item', '`sales/order_item`.order_id=`main_table`.entity_id', array(
+			'skus' => new Zend_Db_Expr('group_concat(`sales/order_item`.sku SEPARATOR ",")'),
+			'names' => new Zend_Db_Expr('group_concat(`sales/order_item`.name SEPARATOR ",")'),
+			'qty_invoiced',
+			'qty_shipped',
+			'qty_refunded',
+				)
+		);
+		$collection->getSelect()->group('main_table.entity_id');
+
         if (!empty($requestData)) {
             $storeIds = $request->getParam('store_ids');
             if ($storeIds == null) {
-                $collection = Mage::getModel('sales/order')->getCollection();
-                $collection->addFieldToFilter('main_table.created_at', array('from' => $today));
-                $collection->getSelect()->join(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'), 'main_table.billing_address_id = ' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address') . '.entity_id', array('country_id', 'region', 'city', 'postcode', 'main_table.total_qty_ordered', 'main_table.subtotal', 'main_table.tax_amount', 'main_table.discount_amount', 'main_table.grand_total', 'main_table.total_invoiced', 'main_table.total_refunded'));
-                $collection->join(
-                        'sales/order_item', '`sales/order_item`.order_id=`main_table`.entity_id', array(
-                    'skus' => new Zend_Db_Expr('group_concat(`sales/order_item`.sku SEPARATOR ",")'),
-                    'names' => new Zend_Db_Expr('group_concat(`sales/order_item`.name SEPARATOR ",")'),
-                    'qty_invoiced',
-                    'qty_shipped',
-                    'qty_refunded',
-                        )
-                );
-                $collection->getSelect()->group('main_table.entity_id');
+
             } else {
                 $arrStoreIds = explode(',', $storeIds);
-                $collection = Mage::getModel('sales/order')->getCollection();
-                $collection->addFieldToFilter('main_table.created_at', array('from' => $today));
-                $collection->getSelect()->join(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'), 'main_table.billing_address_id = ' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address') . '.entity_id', array('country_id', 'region', 'city', 'postcode', 'main_table.total_qty_ordered', 'main_table.subtotal', 'main_table.tax_amount', 'main_table.discount_amount', 'main_table.grand_total', 'main_table.total_invoiced', 'main_table.total_refunded'));
-                $collection->join(
-                        'sales/order_item', '`sales/order_item`.order_id=`main_table`.entity_id', array(
-                    'skus' => new Zend_Db_Expr('group_concat(`sales/order_item`.sku SEPARATOR ",")'),
-                    'names' => new Zend_Db_Expr('group_concat(`sales/order_item`.name SEPARATOR ",")'),
-                    'qty_invoiced',
-                    'qty_shipped',
-                    'qty_refunded',
-                        )
-                );
-                $collection->getSelect()->group('main_table.entity_id');
                 $collection->getSelect()->where('main_table.store_id IN(?)', $arrStoreIds);
             }
         } else {
             $storeIds = $request->getParam('store_ids');
             if ($storeIds == null) {
-                $collection = Mage::getModel('sales/order')->getCollection();
-                $collection->getSelect()->join(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'), 'main_table.billing_address_id = ' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address') . '.entity_id', array('country_id', 'region', 'city', 'postcode', 'main_table.total_qty_ordered', 'main_table.subtotal', 'main_table.tax_amount', 'main_table.discount_amount', 'main_table.grand_total', 'main_table.total_invoiced', 'main_table.total_refunded'));
-                $collection->join(
-                        'sales/order_item', '`sales/order_item`.order_id=`main_table`.entity_id', array(
-                    'skus' => new Zend_Db_Expr('group_concat(`sales/order_item`.sku SEPARATOR ",")'),
-                    'names' => new Zend_Db_Expr('group_concat(`sales/order_item`.name SEPARATOR ",")'),
-                    'qty_invoiced',
-                    'qty_shipped',
-                    'qty_refunded',
-                        )
-                );
-                $collection->getSelect()->group('main_table.entity_id');
+
             } else {
                 $arrStoreIds = explode(',', $storeIds);
-                $collection = Mage::getModel('sales/order')->getCollection();
-                $collection->getSelect()->join(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'), 'main_table.billing_address_id = ' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address') . '.entity_id', array('country_id', 'region', 'city', 'postcode', 'main_table.total_qty_ordered', 'main_table.subtotal', 'main_table.tax_amount', 'main_table.discount_amount', 'main_table.grand_total', 'main_table.total_invoiced', 'main_table.total_refunded'));
-                $collection->join(
-                        'sales/order_item', '`sales/order_item`.order_id=`main_table`.entity_id', array(
-                    'skus' => new Zend_Db_Expr('group_concat(`sales/order_item`.sku SEPARATOR ",")'),
-                    'names' => new Zend_Db_Expr('group_concat(`sales/order_item`.name SEPARATOR ",")'),
-                    'qty_invoiced',
-                    'qty_shipped',
-                    'qty_refunded',
-                        )
-                );
-                $collection->getSelect()->group('main_table.entity_id');
                 $collection->getSelect()->where('main_table.store_id IN(?)', $arrStoreIds);
             }
         }
+		
 		Mage::unregister('dyno_col'); 
 		Mage::register('dyno_col', Mage::helper('xreports')->dynoColCallback($collection));
 		$newCollection = new Varien_Data_Collection();
@@ -102,9 +85,10 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 			foreach($dyno_col as $keyed){
 				$item->setData("${keyed}",Mage::helper('xreports')->dynoColValue($item,$keyed));
 			 }
-			 //$newCollection->addItem($item);
+			 $newCollection->addItem($item);
 		}
-		return $collection;
+		
+		return $newCollection;
 	}
 
 
