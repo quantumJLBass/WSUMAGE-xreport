@@ -104,7 +104,28 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
 				'html_decorators' => array('nobr')
 			));
 		}
-		
+		if(empty($_col) || isset($_col['sku'])){
+			$this->addColumn('sku', array(
+				'header' => Mage::helper('xreports')->__('Sku'),
+				'align' => 'left',
+				'index' => 'sku',
+				'type' => 'text',
+				'width' => '200',
+				'renderer' => 'Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Renderer_Sku',
+				'sortable' => true
+			));
+		}
+		if(empty($_col) || isset($_col['name'])){
+			$this->addColumn('name', array(
+				'header' => Mage::helper('xreports')->__('Name'),
+				'align' => 'left',
+				'index' => 'name',
+				'type' => 'text',
+				'width' => '200',
+				'renderer' => 'Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Renderer_Name',
+				'sortable' => true
+			));
+		}		
 		if(empty($_col) || isset($_col['customer_firstname'])){
 			$this->addColumn('customer_firstname', array(
 				'header' => Mage::helper('xreports')->__('Customer first name'),
@@ -161,17 +182,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
 			));
 		}
 		
-		if(empty($_col) || isset($_col['sku'])){
-			$this->addColumn('sku', array(
-				'header' => Mage::helper('xreports')->__('Sku'),
-				'align' => 'left',
-				'index' => 'sku',
-				'type' => 'text',
-				'width' => '200',
-				'renderer' => 'Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Renderer_Sku',
-				'sortable' => true
-			));
-		}
+
 		if(empty($_col) || isset($_col['dyno_options'])){
 			$this->addColumn('dyno_options', array(
 				'header' => Mage::helper('xreports')->__('Item options'),
