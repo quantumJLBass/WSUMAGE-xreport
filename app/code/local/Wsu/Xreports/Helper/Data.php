@@ -28,7 +28,7 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 		$today = date('Y-m-d', Mage::getModel('core/date')->timestamp(time()));
 		$request = Mage::app()->getRequest();
         $requestData = Mage::helper('adminhtml')->prepareFilterString($request->getParam('filter'));
-        if (count($requestData) == 0) {
+        if (!empty($requestData)) {
             $storeIds = $request->getParam('store_ids');
             if ($storeIds == null) {
                 $collection = Mage::getModel('sales/order')->getCollection();
@@ -102,9 +102,9 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 			foreach($dyno_col as $keyed){
 				$item->setData("${keyed}",Mage::helper('xreports')->dynoColValue($item,$keyed));
 			 }
-			 $newCollection->addItem($item);
+			 //$newCollection->addItem($item);
 		}
-		return $newCollection;
+		return $collection;
 	}
 
 

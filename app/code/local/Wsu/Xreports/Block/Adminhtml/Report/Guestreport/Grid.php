@@ -17,13 +17,43 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
     }
 
     protected function _prepareCollection() {
+		Mage::register( 'collection', Mage::helper('xreports')->_findCollection() );
 		$collection = Mage::registry('collection');
-		
 		$this->setCollection($collection);
-		
         return parent::_prepareCollection();
     }
 
+
+/*	
+    protected function _addColumnFilterToCollection($column){
+        $filterArr = Mage::registry('preparedFilter');
+        if (($column->getId() === 'store_id' || $column->getId() === 'status') 
+			&& $column->getFilter()->getValue() && strpos($column->getFilter()->getValue(), ',')) {
+            $_inNin = explode(',', $column->getFilter()->getValue());
+            $inNin = array();
+            foreach ($_inNin as $k => $v) {
+                if (is_string($v) && strlen(trim($v))) {
+                    $inNin[] = trim($v);
+                }
+            }
+            if (count($inNin)>1 && in_array($inNin[0], array('in', 'nin'))) {
+                $in = $inNin[0];
+                $values = array_slice($inNin, 1);
+                $this->getCollection()->addFieldToFilter($column->getId(), array($in => $values));
+            } else {
+                parent::_addColumnFilterToCollection($column);
+            }
+        } elseif (is_array($filterArr) && array_key_exists($column->getId(), $filterArr) && isset($filterArr[$column->getId()])) {
+            $this->getCollection()->addFieldToFilter($column->getId(), $filterArr[$column->getId()]);
+        } else {
+            parent::_addColumnFilterToCollection($column);
+        }
+		print((string)$this->getCollection()->getSelect());
+		var_dump($filterArr);
+        Zend_Debug::dump((string)$this->getCollection()->getSelect(), 'Prepared filter:');
+        return $this;
+    }
+*/
 
 
     protected function _prepareColumns() {
@@ -56,7 +86,26 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
 			));
 		}
 		
-		
+		if(empty($_col) || isset($_col['customer_firstname'])){
+			$this->addColumn('customer_firstname', array(
+				'header' => Mage::helper('xreports')->__('Customer first name'),
+				'align' => 'left',
+				'width' => '250',
+				'index' => 'customer_firstname',
+				'type' => 'text',
+				'sortable' => true
+			));
+		}
+		if(empty($_col) || isset($_col['customer_lastname'])){
+			$this->addColumn('customer_lastname', array(
+				'header' => Mage::helper('xreports')->__('Customer last name'),
+				'align' => 'left',
+				'width' => '250',
+				'index' => 'customer_lastname',
+				'type' => 'text',
+				'sortable' => true
+			));
+		}
 		$dyno_col=(array)Mage::registry('dyno_col');
 		foreach($dyno_col as $keyed){
 			$this->addColumn("option_${keyed}", array(
@@ -78,7 +127,8 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
 				'type' => 'datetime',
 				'width' => '100',
 				'sortable' => true,
-				'renderer' => 'Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Renderer_Createdat'
+				'renderer' => 'Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Renderer_Createdat',
+				'filter_condition_callback' => array($this, '_fromFilter'),
 			));
 		}
 		
@@ -136,6 +186,19 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
         return Mage::app()->getStore()->getBaseCurrencyCode();
     }
 
+	protected function _fromFilter($collection, $column) {
+        /*if (!$value = $column->getFilter()->getValue()) {
+            return $this;
+        }
+		
+		var_dump($value);
+		
+		
+		if(isset($value['from'])){
+        	$this->getCollection()->getSelect()->where( "main_table.created_at >= ?" , $value['from']->toString('Y-m-d H:i:s') );
+		}*/
+        return $this;
+    }
 
 
 

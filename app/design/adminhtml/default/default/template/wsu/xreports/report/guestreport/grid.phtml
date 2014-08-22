@@ -90,7 +90,7 @@ $requestData =    Mage::helper('adminhtml')->prepareFilterString($this->getReque
 					&nbsp;
 				</div>
 				<div class="f-left">
-					<div><?php echo $this->helper('xreports')->__('From ') ?><input class="input-text no-changes" type="text" id="period_date_from" value="<?php if(isset($requestData['created_at'])){echo $requestData['created_at']['from'];} ?>" onchange="setCreatedAtFrom(this.value);" name="report_from" style="width:5em"> <img src="<?php echo $this->getSkinUrl('images/grid-cal.gif')?>" title="Select Date" id="period_date_from_trig" alt="Select Date" class="v-middle">&nbsp;&nbsp;</div>
+					<div><?php echo $this->helper('xreports')->__('From ') ?><input class="input-text no-changes" type="text" id="period_date_from" value="<?php if(isset($requestData['created_at']) && isset($requestData['created_at']['from']) ){echo $requestData['created_at']['from'];} ?>" onchange="setCreatedAtFrom(this.value);" name="report_from" style="width:5em"> <img src="<?php echo $this->getSkinUrl('images/grid-cal.gif')?>" title="Select Date" id="period_date_from_trig" alt="Select Date" class="v-middle">&nbsp;&nbsp;</div>
 					<div id="period_date_from_advaice"></div>
 				</div>        
 				<div class="f-left">
@@ -98,10 +98,10 @@ $requestData =    Mage::helper('adminhtml')->prepareFilterString($this->getReque
 					<div id="period_date_to_advaice"></div>
 				</div>
 				<div class="f-left">            
-					<button class="scalable task" style="" onclick="salesReportGridJsObject.doFilter()" type="button">
+					<button class="scalable task" style="" onclick="guestReportGridJsObject.doFilter()" type="button">
 						<span><span>Refresh</span></span>
 					</button>
-					<button class="scalable " style="" onclick="salesReportGridJsObject.resetFilter()" type="button">
+					<button class="scalable " style="" onclick="guestReportGridJsObject.resetFilter()" type="button">
 						<span><span>Reset Filter</span></span>
 					</button>
 				</div>

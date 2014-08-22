@@ -577,7 +577,7 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
     public function guestReportAction() {
             $this->_title($this->__('xReports'))->_title($this->__('Guest Report'));
 			if((Mage::registry('csv_export')!=true)){ Mage::register('csv_export', false); }
-			Mage::register( 'collection', Mage::helper('xreports')->_findCollection() );
+			
             $this->_initAction()
                     ->_setActiveMenu('report/xreports')
                     ->_addBreadcrumb(Mage::helper('xreports')->__('Guest Report'), Mage::helper('xreports')->__('Guest Report'))
@@ -588,7 +588,7 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
 
     public function exportGuestReportCsvAction() {
         $fileName = 'guest_report-' . gmdate('YmdHis') . '.csv';
-		Mage::register( 'collection', Mage::helper('xreports')->_findCollection() );
+		//Mage::register( 'collection', Mage::helper('xreports')->_findCollection() );
         $grid = $this->getLayout()->createBlock('xreports/adminhtml_report_guestreport_grid');
         $this->_initReportAction($grid);
 		
@@ -597,7 +597,7 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
 
     public function exportGuestReportExcelAction() {
         $fileName = 'guest_report.xml';
-		Mage::register( 'collection', Mage::helper('xreports')->_findCollection() );
+		//Mage::register( 'collection', Mage::helper('xreports')->_findCollection() );
         $grid = $this->getLayout()->createBlock('xreports/adminhtml_report_guestreport_grid');
         $this->_initReportAction($grid);
         $this->_prepareDownloadResponse($fileName, $grid->getExcelFile($fileName));
