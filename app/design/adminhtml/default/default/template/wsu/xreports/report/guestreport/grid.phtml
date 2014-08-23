@@ -324,44 +324,44 @@ $_col = $this->getRequest()->getParam('_col');
 									$collection->addFieldToFilter('main_table.created_at', array('to' => $to));
 								} */                           
 							}
-							if(isset($requestData['status']) && $requestData['status'] != null) {
+							if( isset($requestData['status']) ) {
 								$collection->addFieldToFilter('status', array('eq' => $requestData['status']));
 							}
-							if(isset($requestData['sku']) && $requestData['sku'] != null) {
+							if( isset($requestData['sku']) ) {
 								$collection->addFieldToFilter('sku', array('like' => '%' . $requestData['sku'] . '%'));
 							}
-							if(isset($requestData['customer_email']) && $requestData['customer_email'] != null) {
+							if( isset($requestData['customer_email']) ) {
 								$collection->addFieldToFilter('customer_email', array('like' => '%' . $requestData['customer_email'] . '%'));
 							}
-							if(isset($requestData['customer_group_id']) && $requestData['customer_group_id'] != null) {
+							if( isset($requestData['customer_group_id']) ) {
 								$collection->addFieldToFilter('customer_group_id', array('eq' => $requestData['customer_group_id']));
 							}
 							$collection->getSelect()->join(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'), 'main_table.billing_address_id = ' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'). '.entity_id',array('country_id', 'region', 'city', 'postcode', 'main_table.total_qty_ordered', 'main_table.subtotal', 'main_table.tax_amount', 'main_table.discount_amount', 'main_table.grand_total', 'main_table.total_invoiced', 'main_table.total_refunded'));
-							if(isset($requestData['country_id']) && $requestData['country_id'] != null) {
+							if( isset($requestData['country_id']) ) {
 								$collection->addFieldToFilter('country_id', array('eq' => $requestData['country_id']));
 							}
-							if(isset($requestData['region']) && $requestData['region'] != null) {
+							if( isset($requestData['region']) ) {
 								$collection->addFieldToFilter('region', array('like' => '%' . $requestData['region'] . '%'));
 							}
-							if(isset($requestData['city']) && $requestData['city'] != null) {
+							if( isset($requestData['city']) ) {
 								$collection->addFieldToFilter('city', array('like' => '%' . $requestData['city'] . '%'));
 							}
-							if(isset($requestData['postcode']) && $requestData['postcode'] != null) {
+							if( isset($requestData['postcode']) ) {
 								$collection->addFieldToFilter('postcode', array('like' => '%' . $requestData['postcode'] . '%'));
 							}
-							if(isset($requestData['name']) && $requestData['name'] != null) {
+							if( isset($requestData['name']) ) {
 								$collection->addFieldToFilter('name', array('like' => '%' . $requestData['name'] . '%'));
 							}
-							if(isset($requestData['total_qty_ordered']) && $requestData['total_qty_ordered'] != null) {
-								if($requestData['total_qty_ordered']['from'] != null && $requestData['total_qty_ordered']['to'] != null) {
+							if( isset($requestData['total_qty_ordered']) ) {
+								if( isset($requestData['total_qty_ordered']['from']) && isset($requestData['total_qty_ordered']['to']) ) {
 									$collection->addFieldToFilter('total_qty_ordered', array('from' => $requestData['total_qty_ordered']['from'], 'to' => $requestData['total_qty_ordered']['to']));
-								} else if($requestData['total_qty_ordered']['from'] != null && $requestData['total_qty_ordered']['to'] == null) {
+								} else if( isset($requestData['total_qty_ordered']['from']) && !isset($requestData['total_qty_ordered']['to']) ) {
 									$collection->addFieldToFilter('total_qty_ordered', array('from' => $requestData['total_qty_ordered']['from']));
-								} elseif($requestData['total_qty_ordered']['from'] == null && $requestData['total_qty_ordered']['to'] != null) {
+								} elseif( !isset($requestData['total_qty_ordered']['from']) && isset($requestData['total_qty_ordered']['to']) ) {
 									$collection->addFieldToFilter('total_qty_ordered', array('to' => $requestData['total_qty_ordered']['to']));
 								}                            
 							}
-							if(isset($requestData['qty_invoiced']) && $requestData['qty_invoiced'] != null) {
+							if( isset($requestData['qty_invoiced']) ) {
 								if($requestData['qty_invoiced']['from'] != null && $requestData['qty_invoiced']['to'] != null) {
 									$collection->addFieldToFilter('qty_invoiced', array('from' => $requestData['qty_invoiced']['from'], 'to' => $requestData['qty_invoiced']['to']));
 								} else if($requestData['qty_invoiced']['from'] != null && $requestData['qty_invoiced']['to'] == null) {
@@ -370,7 +370,7 @@ $_col = $this->getRequest()->getParam('_col');
 									$collection->addFieldToFilter('qty_invoiced', array('to' => $requestData['qty_invoiced']['to']));
 								}                            
 							}
-							if(isset($requestData['qty_shipped']) && $requestData['qty_shipped'] != null) {
+							if( isset($requestData['qty_shipped']) ) {
 								if($requestData['qty_shipped']['from'] != null && $requestData['qty_shipped']['to'] != null) {
 									$collection->addFieldToFilter('qty_shipped', array('from' => $requestData['qty_shipped']['from'], 'to' => $requestData['qty_shipped']['to']));
 								} else if($requestData['qty_shipped']['from'] != null && $requestData['qty_shipped']['to'] == null) {
@@ -388,7 +388,7 @@ $_col = $this->getRequest()->getParam('_col');
 									$collection->addFieldToFilter('qty_refunded', array('to' => $requestData['qty_refunded']['to']));
 								}                            
 							}
-							if(isset($requestData['subtotal']) && $requestData['subtotal'] != null) {
+							if( isset($requestData['subtotal']) ) {
 								if($requestData['subtotal']['from'] != null && $requestData['subtotal']['to'] != null) {
 									$collection->addFieldToFilter('subtotal', array('from' => $requestData['subtotal']['from'], 'to' => $requestData['subtotal']['to']));
 								} else if($requestData['subtotal']['from'] != null && $requestData['subtotal']['to'] == null) {
@@ -397,7 +397,7 @@ $_col = $this->getRequest()->getParam('_col');
 									$collection->addFieldToFilter('subtotal', array('to' => $requestData['subtotal']['to']));
 								}                            
 							}
-							if(isset($requestData['tax_amount']) && $requestData['tax_amount'] != null) {
+							if( isset($requestData['tax_amount']) ) {
 								if($requestData['tax_amount']['from'] != null && $requestData['tax_amount']['to'] != null) {
 									$collection->addFieldToFilter('main_table.tax_amount', array('from' => $requestData['tax_amount']['from'], 'to' => $requestData['tax_amount']['to']));
 								} else if($requestData['tax_amount']['from'] != null && $requestData['tax_amount']['to'] == null) {
@@ -406,7 +406,7 @@ $_col = $this->getRequest()->getParam('_col');
 									$collection->addFieldToFilter('main_table.tax_amount', array('to' => $requestData['tax_amount']['to']));
 								}                            
 							}
-							if(isset($requestData['discount_amount']) && $requestData['discount_amount'] != null) {
+							if( isset($requestData['discount_amount']) ) {
 								if($requestData['discount_amount']['from'] != null && $requestData['discount_amount']['to'] != null) {
 									$collection->addFieldToFilter('main_table.discount_amount', array('from' => $requestData['discount_amount']['from'], 'to' => $requestData['discount_amount']['to']));
 								} else if($requestData['discount_amount']['from'] != null && $requestData['discount_amount']['to'] == null) {
@@ -415,7 +415,7 @@ $_col = $this->getRequest()->getParam('_col');
 									$collection->addFieldToFilter('main_table.discount_amount', array('to' => $requestData['discount_amount']['to']));
 								}                            
 							}
-							if(isset($requestData['grand_total']) && $requestData['grand_total'] != null) {
+							if( isset($requestData['grand_total']) ) {
 								if($requestData['grand_total']['from'] != null && $requestData['grand_total']['to'] != null) {
 									$collection->addFieldToFilter('grand_total', array('from' => $requestData['grand_total']['from'], 'to' => $requestData['grand_total']['to']));
 								} else if($requestData['grand_total']['from'] != null && $requestData['grand_total']['to'] == null) {
@@ -453,35 +453,35 @@ $_col = $this->getRequest()->getParam('_col');
 									$collection->addFieldToFilter('main_table.created_at', array('to' => $to));
 								}                            
 							}
-							if(isset($requestData['status']) && $requestData['status'] != null) {
+							if( isset($requestData['status']) ) {
 								$collection->addFieldToFilter('status', array('eq' => $requestData['status']));
 							}
-							if(isset($requestData['sku']) && $requestData['sku'] != null) {
+							if( isset($requestData['sku']) ) {
 								$collection->addFieldToFilter('sku', array('like' => '%' . $requestData['sku'] . '%'));
 							}
-							if(isset($requestData['customer_email']) && $requestData['customer_email'] != null) {
+							if( isset($requestData['customer_email']) ) {
 								$collection->addFieldToFilter('customer_email', array('like' => '%' . $requestData['customer_email'] . '%'));
 							}
-							if(isset($requestData['customer_group_id']) && $requestData['customer_group_id'] != null) {
+							if( isset($requestData['customer_group_id']) ) {
 								$collection->addFieldToFilter('customer_group_id', array('eq' => $requestData['customer_group_id']));
 							}
 							$collection->getSelect()->join(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'), 'main_table.billing_address_id = ' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'). '.entity_id',array('country_id', 'region', 'city', 'postcode', 'main_table.total_qty_ordered', 'main_table.subtotal', 'main_table.tax_amount', 'main_table.discount_amount', 'main_table.grand_total', 'main_table.total_invoiced', 'main_table.total_refunded'));
-							if(isset($requestData['country_id']) && $requestData['country_id'] != null) {
+							if( isset($requestData['country_id']) ) {
 								$collection->addFieldToFilter('country_id', array('eq' => $requestData['country_id']));
 							}
-							if(isset($requestData['region']) && $requestData['region'] != null) {
+							if( isset($requestData['region']) ) {
 								$collection->addFieldToFilter('region', array('like' => '%' . $requestData['region'] . '%'));
 							}
-							if(isset($requestData['city']) && $requestData['city'] != null) {
+							if( isset($requestData['city']) ) {
 								$collection->addFieldToFilter('city', array('like' => '%' . $requestData['city'] . '%'));
 							}
-							if(isset($requestData['postcode']) && $requestData['postcode'] != null) {
+							if( isset($requestData['postcode']) ) {
 								$collection->addFieldToFilter('postcode', array('like' => '%' . $requestData['postcode'] . '%'));
 							}
-							if(isset($requestData['name']) && $requestData['name'] != null) {
+							if( isset($requestData['name']) ) {
 								$collection->addFieldToFilter('name', array('like' => '%' . $requestData['name'] . '%'));
 							}
-							if(isset($requestData['total_qty_ordered']) && $requestData['total_qty_ordered'] != null) {
+							if( isset($requestData['total_qty_ordered']) ) {
 								if($requestData['total_qty_ordered']['from'] != null && $requestData['total_qty_ordered']['to'] != null) {
 									$collection->addFieldToFilter('total_qty_ordered', array('from' => $requestData['total_qty_ordered']['from'], 'to' => $requestData['total_qty_ordered']['to']));
 								} else if($requestData['total_qty_ordered']['from'] != null && $requestData['total_qty_ordered']['to'] == null) {
@@ -490,7 +490,7 @@ $_col = $this->getRequest()->getParam('_col');
 									$collection->addFieldToFilter('total_qty_ordered', array('to' => $requestData['total_qty_ordered']['to']));
 								}                            
 							}
-							if(isset($requestData['qty_invoiced']) && $requestData['qty_invoiced'] != null) {
+							if( isset($requestData['qty_invoiced']) ) {
 								if($requestData['qty_invoiced']['from'] != null && $requestData['qty_invoiced']['to'] != null) {
 									$collection->addFieldToFilter('qty_invoiced', array('from' => $requestData['qty_invoiced']['from'], 'to' => $requestData['qty_invoiced']['to']));
 								} else if($requestData['qty_invoiced']['from'] != null && $requestData['qty_invoiced']['to'] == null) {
@@ -499,7 +499,7 @@ $_col = $this->getRequest()->getParam('_col');
 									$collection->addFieldToFilter('qty_invoiced', array('to' => $requestData['qty_invoiced']['to']));
 								}                            
 							}
-							if(isset($requestData['qty_shipped']) && $requestData['qty_shipped'] != null) {
+							if( isset($requestData['qty_shipped']) ) {
 								if($requestData['qty_shipped']['from'] != null && $requestData['qty_shipped']['to'] != null) {
 									$collection->addFieldToFilter('qty_shipped', array('from' => $requestData['qty_shipped']['from'], 'to' => $requestData['qty_shipped']['to']));
 								} else if($requestData['qty_shipped']['from'] != null && $requestData['qty_shipped']['to'] == null) {
@@ -508,7 +508,7 @@ $_col = $this->getRequest()->getParam('_col');
 									$collection->addFieldToFilter('qty_shipped', array('to' => $requestData['qty_shipped']['to']));
 								}                            
 							}
-							if(isset($requestData['qty_refunded']) && $requestData['qty_refunded'] != null) {
+							if( isset($requestData['qty_refunded']) ) {
 								if($requestData['qty_refunded']['from'] != null && $requestData['qty_refunded']['to'] != null) {
 									$collection->addFieldToFilter('qty_refunded', array('from' => $requestData['qty_refunded']['from'], 'to' => $requestData['qty_refunded']['to']));
 								} else if($requestData['qty_refunded']['from'] != null && $requestData['qty_refunded']['to'] == null) {
@@ -517,7 +517,7 @@ $_col = $this->getRequest()->getParam('_col');
 									$collection->addFieldToFilter('qty_refunded', array('to' => $requestData['qty_refunded']['to']));
 								}                            
 							}
-							if(isset($requestData['subtotal']) && $requestData['subtotal'] != null) {
+							if( isset($requestData['subtotal']) ) {
 								if($requestData['subtotal']['from'] != null && $requestData['subtotal']['to'] != null) {
 									$collection->addFieldToFilter('subtotal', array('from' => $requestData['subtotal']['from'], 'to' => $requestData['subtotal']['to']));
 								} else if($requestData['subtotal']['from'] != null && $requestData['subtotal']['to'] == null) {
@@ -526,7 +526,7 @@ $_col = $this->getRequest()->getParam('_col');
 									$collection->addFieldToFilter('subtotal', array('to' => $requestData['subtotal']['to']));
 								}                            
 							}
-							if(isset($requestData['tax_amount']) && $requestData['tax_amount'] != null) {
+							if( isset($requestData['tax_amount']) ) {
 								if($requestData['tax_amount']['from'] != null && $requestData['tax_amount']['to'] != null) {
 									$collection->addFieldToFilter('main_table.tax_amount', array('from' => $requestData['tax_amount']['from'], 'to' => $requestData['tax_amount']['to']));
 								} else if($requestData['tax_amount']['from'] != null && $requestData['tax_amount']['to'] == null) {
@@ -535,7 +535,7 @@ $_col = $this->getRequest()->getParam('_col');
 									$collection->addFieldToFilter('main_table.tax_amount', array('to' => $requestData['tax_amount']['to']));
 								}                            
 							}
-							if(isset($requestData['discount_amount']) && $requestData['discount_amount'] != null) {
+							if( isset($requestData['discount_amount']) ) {
 								if($requestData['discount_amount']['from'] != null && $requestData['discount_amount']['to'] != null) {
 									$collection->addFieldToFilter('main_table.discount_amount', array('from' => $requestData['discount_amount']['from'], 'to' => $requestData['discount_amount']['to']));
 								} else if($requestData['discount_amount']['from'] != null && $requestData['discount_amount']['to'] == null) {
@@ -544,7 +544,7 @@ $_col = $this->getRequest()->getParam('_col');
 									$collection->addFieldToFilter('main_table.discount_amount', array('to' => $requestData['discount_amount']['to']));
 								}                            
 							}
-							if(isset($requestData['grand_total']) && $requestData['grand_total'] != null) {
+							if( isset($requestData['grand_total']) ) {
 								if($requestData['grand_total']['from'] != null && $requestData['grand_total']['to'] != null) {
 									$collection->addFieldToFilter('grand_total', array('from' => $requestData['grand_total']['from'], 'to' => $requestData['grand_total']['to']));
 								} else if($requestData['grand_total']['from'] != null && $requestData['grand_total']['to'] == null) {

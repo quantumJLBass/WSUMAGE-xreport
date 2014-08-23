@@ -414,7 +414,7 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
 		$requestData = Mage::helper('adminhtml')->prepareFilterString($this->getRequest()->getParam('filter'));
 		if (count($requestData) > 0) {
 			$storeIds = explode(',', $this->getRequest()->getParam('store_ids'));
-			if ( is_null($this->getRequest()->getParam('store_ids')) ) {
+			if ( !isset($this->getRequest()->getParam('store_ids')) ) {
 				$orders = Mage::getModel('sales/order')->getCollection();
 			} else {
 				$orders = Mage::getModel('sales/order')->getCollection()

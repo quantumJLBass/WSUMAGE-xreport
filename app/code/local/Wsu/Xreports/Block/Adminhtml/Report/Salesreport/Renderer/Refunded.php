@@ -5,11 +5,11 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Renderer_Refunded extends 
     public function render(Varien_Object $row) {
         $id = $row->getData('entity_id');
         $model = Mage::getModel('sales/order')->load($id);
-        if ($model->getTotalRefunded() != null) {
-            $html = Mage::helper('core')->currency($model->getTotalRefunded(), true, false);
-        } else {
-            $html = Mage::helper('core')->currency(0, true, false);
+		$total = 0;
+        if ( isset($model->getTotalRefunded()) ) {
+            $total = $model->getTotalRefunded();
         }
+		$html = Mage::helper('core')->currency($total, true, false);
         return $html;
     }
 

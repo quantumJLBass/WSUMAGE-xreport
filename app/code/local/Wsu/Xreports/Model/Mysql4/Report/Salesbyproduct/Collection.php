@@ -114,11 +114,11 @@ class Wsu_Xreports_Model_Mysql4_Report_Salesbyproduct_Collection extends Mage_Co
      * @return Wsu_Xreports_Model_Mysql4_Report_Order_Collection
      */
     protected function _applyDateRangeFilter() {
-        if (!is_null($this->_from)) {
+        if (isset($this->_from)) {
             $this->_from = date('Y-m-d G:i:s', strtotime($this->_from));
             $this->getSelect()->where(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_item') . '.created_at >= ?', $this->_from);
         }
-        if (!is_null($this->_to)) {
+        if (isset($this->_to)) {
             $this->_to = date('Y-m-d G:i:s', strtotime($this->_to));
         }
         $this->getSelect()->where(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_item') . '.created_at <= ?', $this->_to);
@@ -229,7 +229,7 @@ class Wsu_Xreports_Model_Mysql4_Report_Salesbyproduct_Collection extends Mage_Co
 
     public function _applyCustomFilter() {
         $requestData = Mage::helper('adminhtml')->prepareFilterString(Mage::app()->getRequest()->getParam('filter'));
-        if (isset($requestData['sku']) && !is_null($requestData['sku'])) {
+        if ( isset($requestData['sku']) ) {
             $sku = $requestData['sku'];
  			$this->getSelect()->where('sku = ?', $sku);
             return $this;

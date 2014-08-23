@@ -5,7 +5,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesbycountry_Renderer_Country extend
     public function render(Varien_Object $row) {
         $id = $row->getData('country');
         $address = Mage::getModel('sales/order_address')->load($id);
-        if (Mage::app()->getLocale()->getCountryTranslation($address->getCountryId()) != null) {
+        if ( isset( Mage::app()->getLocale()->getCountryTranslation($address->getCountryId()) ) ) {
             $html = Mage::app()->getLocale()->getCountryTranslation($address->getCountryId());
         } else {
             $html = 'Other';
