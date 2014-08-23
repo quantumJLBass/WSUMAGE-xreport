@@ -229,17 +229,11 @@ class Wsu_Xreports_Model_Mysql4_Report_Salesbyproduct_Collection extends Mage_Co
 
     public function _applyCustomFilter() {
         $requestData = Mage::helper('adminhtml')->prepareFilterString(Mage::app()->getRequest()->getParam('filter'));
-        if (isset($requestData['sku']) && $requestData['sku'] != null) {
+        if (isset($requestData['sku']) && !is_null($requestData['sku'])) {
             $sku = $requestData['sku'];
-        } else {
-            $sku = null;
-        }
-
-        if ($sku == null) {
+ 			$this->getSelect()->where('sku = ?', $sku);
             return $this;
-        }
-        if ($sku != null) {
-            $this->getSelect()->where('sku = ?', $sku);
+        } else {
             return $this;
         }
     }

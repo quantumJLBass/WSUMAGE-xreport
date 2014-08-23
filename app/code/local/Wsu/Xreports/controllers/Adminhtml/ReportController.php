@@ -208,7 +208,7 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
 		$requestData = Mage::helper('adminhtml')->prepareFilterString($this->getRequest()->getParam('filter'));
 		if (count($requestData) > 0) {
 			$storeIds = explode(',', $this->getRequest()->getParam('store_ids'));
-			if ($this->getRequest()->getParam('store_ids') == null) {
+			if ( is_null($this->getRequest()->getParam('store_ids')) ) {
 				$orders = Mage::getModel('sales/order')->getCollection();
 			} else {
 				$orders = Mage::getModel('sales/order')->getCollection()
@@ -235,7 +235,7 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
 				$writeConnection->query($delete);
 				$insert = 'INSERT INTO ' . Mage::getSingleton('core/resource')->getTableName('xreports_hour') . ' (h,total_item_count,grand_total) VALUES(0,0,"0.0000"),(1,0,"0.0000"),(2,0,"0.0000"),(3,0,"0.0000"),(4,0,"0.0000"),(5,0,"0.0000"),(6,0,"0.0000"),(7,0,"0.0000"),(8,0,"0.0000"),(9,0,"0.0000"),(10,0,"0.0000"),(11,0,"0.0000"),(12,0,"0.0000"),(13,0,"0.0000"),(14,0,"0.0000"),(15,0,"0.0000"),(16,0,"0.0000"),(17,0,"0.0000"),(18,0,"0.0000"),(19,0,"0.0000"),(20,0,"0.0000"),(21,0,"0.0000"),(22,0,"0.0000"),(23,0,"0.0000")';
 				$writeConnection->query($insert);
-				if ($this->getRequest()->getParam('store_ids') == null) {
+				if ( is_null($this->getRequest()->getParam('store_ids')) ) {
 					if ($strStatuses != null) {
 						$query = 'SELECT `' . Mage::getSingleton('core/resource')->getTableName('xreports_hour') . '`.`h` AS `hour`, IFNULL(SUM(`' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order') . '`.`total_item_count`), 0) AS `total_item_count`, IFNULL(SUM(`' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order') . '`.`grand_total`), 0) AS `grand_total`, `' . Mage::getSingleton('core/resource')->getTableName('xreports_hour') . '`.`h` FROM `' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order') . '` RIGHT JOIN `' . Mage::getSingleton('core/resource')->getTableName('xreports_hour') . '` ON HOUR(`' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order') . '`.`created_at`) = `' . Mage::getSingleton('core/resource')->getTableName('xreports_hour') . '`.`h` WHERE (`' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order') . '`.`status` IN(' . $strStatuses . ')) AND (`' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order') . '`.`created_at` >= "' . $from . '") AND (`' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order') . '`.`created_at` <= "' . $to . '") GROUP BY `' . Mage::getSingleton('core/resource')->getTableName('xreports_hour') . '`.`h`';
 					} else {
@@ -311,7 +311,7 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
 		$requestData = Mage::helper('adminhtml')->prepareFilterString($this->getRequest()->getParam('filter'));
 		if (count($requestData) > 0) {
 			$storeIds = explode(',', $this->getRequest()->getParam('store_ids'));
-			if ($this->getRequest()->getParam('store_ids') == null) {
+			if ( is_null($this->getRequest()->getParam('store_ids')) ) {
 				$orders = Mage::getModel('sales/order')->getCollection();
 			} else {
 				$orders = Mage::getModel('sales/order')->getCollection()
@@ -338,7 +338,7 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
 				$writeConnection->query($delete);
 				$insert = 'INSERT INTO ' . Mage::getSingleton('core/resource')->getTableName('xreports_dayofweek') . ' (d, total_item_count, grand_total,n) VALUES("Sunday",0,"0.0000",1),("Monday",0,"0.0000",2),("Tuesday",0,"0.0000",3),("Wednesday",0,"0.0000",4),("Thursday",0,"0.0000",5),("Friday",0,"0.0000",6),("Saturday",0,"0.0000",7)';
 				$writeConnection->query($insert);
-				if ($this->getRequest()->getParam('store_ids') == null) {
+				if ( is_null($this->getRequest()->getParam('store_ids')) ) {
 					if ($strStatuses != null) {
 						$query = 'SELECT `' . Mage::getSingleton('core/resource')->getTableName('xreports_dayofweek') . '`.`d` AS `day`, IFNULL(SUM(`' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order') . '`.`total_item_count`), 0) AS `total_item_count`, IFNULL(SUM(`' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order') . '`.`grand_total`), 0) AS `grand_total`, `' . Mage::getSingleton('core/resource')->getTableName('xreports_dayofweek') . '`.`d` FROM `' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order') . '` RIGHT JOIN `' . Mage::getSingleton('core/resource')->getTableName('xreports_dayofweek') . '` ON DATE_FORMAT(`' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order') . '`.`created_at`, "%W") = `' . Mage::getSingleton('core/resource')->getTableName('xreports_dayofweek') . '`.`d` WHERE (`' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order') . '`.`status` IN(' . $strStatuses . ')) AND (`' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order') . '`.`created_at` >= "' . $from . '") AND (`' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order') . '`.`created_at` <= "' . $to . '") GROUP BY `' . Mage::getSingleton('core/resource')->getTableName('xreports_dayofweek') . '`.`d`';
 					} else {
@@ -414,7 +414,7 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
 		$requestData = Mage::helper('adminhtml')->prepareFilterString($this->getRequest()->getParam('filter'));
 		if (count($requestData) > 0) {
 			$storeIds = explode(',', $this->getRequest()->getParam('store_ids'));
-			if ($this->getRequest()->getParam('store_ids') == null) {
+			if ( is_null($this->getRequest()->getParam('store_ids')) ) {
 				$orders = Mage::getModel('sales/order')->getCollection();
 			} else {
 				$orders = Mage::getModel('sales/order')->getCollection()

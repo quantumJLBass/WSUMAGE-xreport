@@ -58,22 +58,22 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 		);
 		$collection->getSelect()->group('main_table.entity_id');
 
+		$storeIds = $request->getParam('store_ids');
+		if (!is_null($storeIds)) {
+			$arrStoreIds = explode(',', $storeIds);
+			$collection->getSelect()->where('main_table.store_id IN(?)', $arrStoreIds);
+		}
+
+		
         if (!empty($requestData)) {
-            $storeIds = $request->getParam('store_ids');
-            if ($storeIds == null) {
-
-            } else {
-                $arrStoreIds = explode(',', $storeIds);
-                $collection->getSelect()->where('main_table.store_id IN(?)', $arrStoreIds);
-            }
-        } else {
-            $storeIds = $request->getParam('store_ids');
-            if ($storeIds == null) {
-
-            } else {
-                $arrStoreIds = explode(',', $storeIds);
-                $collection->getSelect()->where('main_table.store_id IN(?)', $arrStoreIds);
-            }
+			if(isset($requestData['name'])){
+				$name = $requestData['name'];
+				$collection->getSelect()->orWhere('main_table.names LIKE \'%?%\'', $name);
+			}
+			if(isset($requestData['sku'])){
+				$sku = $requestData['sku'];
+				$collection->getSelect()->orWhere('main_table.skus LIKE \'%?%\'', $sku);
+			}
         }
 		
 		Mage::unregister('dyno_col'); 
