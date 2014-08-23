@@ -18,7 +18,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesbycustomergroup_Renderer_Percent 
 		$orders = Mage::getModel('sales/order')->getCollection();
 		$orders->addAttributeToFilter('created_at', array('from' => $from, 'to' => $to));
 		
-        if ( is_null($request->getParam('store_ids')) ) {
+        if ( !isset($request->getParam('store_ids')) ) {
             if ( isset($requestData['order_statuses']) && !is_null($requestData['order_statuses']) ) {
                 $orders->addAttributeToFilter('status', array('in' => explode(',', $requestData['order_statuses'][0])));
             }
