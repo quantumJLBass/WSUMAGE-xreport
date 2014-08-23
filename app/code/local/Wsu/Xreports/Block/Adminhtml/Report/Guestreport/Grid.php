@@ -86,7 +86,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
 			$_col = $post_col;
 			Mage::getSingleton('core/session')->setFilteredCol($_col);
 		}
-		if($_col==null){
+		if(!isset($_col)){
 			$_col=array();
 		}/**/
 		
