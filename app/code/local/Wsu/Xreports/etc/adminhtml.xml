@@ -81,61 +81,65 @@
                             </config>
                         </children>
                     </system>
-                    <xreports translate="title" module="xreports">
-                        <title>Advanced Reports</title>
-                        <sort_order>71</sort_order>
-                        <depends>
-                            <module>Wsu_Xreports</module>
-                            <config>xreports/general/active</config>
-                        </depends>
-                        <children>				
-                            <salesbycountry translate="title" module="xreports">
-                                <title>Sales by Country</title>
-                                <sort_order>0</sort_order>
-                                <action>xreports/adminhtml_report/salesbycountry</action>
-                            </salesbycountry>
-                            <salesbycustomergroup translate="title" module="xreports">
-                                <title>Sales by Customer Group</title>
-                                <sort_order>1</sort_order>
-                                <action>xreports/adminhtml_report/salesbycustomergroup</action>
-                            </salesbycustomergroup>
-                            <salesbycouponcode translate="title" module="xreports">
-                                <title>Sales by Coupon Code</title>
-                                <sort_order>2</sort_order>
-                                <action>xreports/adminhtml_report/salesbycouponcode</action>
-                            </salesbycouponcode>
-                            <salesreport translate="title" module="xreports">
-                                <title>Sales Report</title>
-                                <sort_order>3</sort_order>
-                                <action>xreports/adminhtml_report/salesreport</action>
-                            </salesreport>
-                            <guestreport translate="title" module="xreports">
-                                <title>Guest Report</title>
-                                <sort_order>3</sort_order>
-                                <action>xreports/adminhtml_report/guestreport</action>
-                            </guestreport>
-                            <salesbyproduct translate="title" module="xreports">
-                                <title>Sales by Product</title>
-                                <sort_order>4</sort_order>
-                                <action>xreports/adminhtml_report/salesbyproduct</action>
-                            </salesbyproduct>
-                            <salesbyhour translate="title" module="xreports">
-                                <title>Sales by Hour</title>
-                                <sort_order>5</sort_order>
-                                <action>xreports/adminhtml_report/salesbyhour</action>
-                            </salesbyhour>
-                            <salesbydayofweek translate="title" module="xreports">
-                                <title>Sales by Day of Week</title>
-                                <sort_order>6</sort_order>
-                                <action>xreports/adminhtml_report/salesbydayofweek</action>
-                            </salesbydayofweek>
-                            <salesbynewandreturning translate="title" module="xreports">
-                                <title>New and Returning Customer</title>
-                                <sort_order>7</sort_order>
-                                <action>xreports/adminhtml_report/salesbynewandreturning</action>
-                            </salesbynewandreturning>				
-                        </children>
-                    </xreports>
+					<report>
+						<children>
+							<xreports translate="title" module="xreports">
+								<title>Advanced Reports</title>
+								<sort_order>71</sort_order>
+								<depends>
+									<module>Wsu_Xreports</module>
+									<config>xreports/general/active</config>
+								</depends>
+								<children>				
+									<salesbycountry translate="title" module="xreports">
+										<title>Sales by Country</title>
+										<sort_order>0</sort_order>
+										<action>xreports/adminhtml_report/salesbycountry</action>
+									</salesbycountry>
+									<salesbycustomergroup translate="title" module="xreports">
+										<title>Sales by Customer Group</title>
+										<sort_order>1</sort_order>
+										<action>xreports/adminhtml_report/salesbycustomergroup</action>
+									</salesbycustomergroup>
+									<salesbycouponcode translate="title" module="xreports">
+										<title>Sales by Coupon Code</title>
+										<sort_order>2</sort_order>
+										<action>xreports/adminhtml_report/salesbycouponcode</action>
+									</salesbycouponcode>
+									<salesreport translate="title" module="xreports">
+										<title>Sales Report</title>
+										<sort_order>3</sort_order>
+										<action>xreports/adminhtml_report/salesreport</action>
+									</salesreport>
+									<guestreport translate="title" module="xreports">
+										<title>Guest Report</title>
+										<sort_order>3</sort_order>
+										<action>xreports/adminhtml_report/guestreport</action>
+									</guestreport>
+									<salesbyproduct translate="title" module="xreports">
+										<title>Sales by Product</title>
+										<sort_order>4</sort_order>
+										<action>xreports/adminhtml_report/salesbyproduct</action>
+									</salesbyproduct>
+									<salesbyhour translate="title" module="xreports">
+										<title>Sales by Hour</title>
+										<sort_order>5</sort_order>
+										<action>xreports/adminhtml_report/salesbyhour</action>
+									</salesbyhour>
+									<salesbydayofweek translate="title" module="xreports">
+										<title>Sales by Day of Week</title>
+										<sort_order>6</sort_order>
+										<action>xreports/adminhtml_report/salesbydayofweek</action>
+									</salesbydayofweek>
+									<salesbynewandreturning translate="title" module="xreports">
+										<title>New and Returning Customer</title>
+										<sort_order>7</sort_order>
+										<action>xreports/adminhtml_report/salesbynewandreturning</action>
+									</salesbynewandreturning>				
+								</children>
+							</xreports>
+						</children>
+                    </report>
                 </children>
             </admin>
         </resources>
