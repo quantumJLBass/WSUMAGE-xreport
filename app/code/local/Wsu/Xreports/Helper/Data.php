@@ -27,6 +27,9 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 		$request = Mage::app()->getRequest();
         $requestData = Mage::helper('adminhtml')->prepareFilterString($request->getParam('filter'));
 		
+		//var_dump($requestData);die();
+		
+		
 		$collection = Mage::getModel('sales/order')->getCollection();
 
 		$fromDate = date('Y-m-d H:i:s', strtotime('now'));
@@ -78,29 +81,29 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 			$arrStoreIds = explode(',', $storeIds);
 			$collection->getSelect()->where('main_table.store_id IN(?)', $arrStoreIds);
 		}
-        if (!empty($requestData)) {
-			if(isset($requestData['name'])){
-				$name = $requestData['name'];
-				$collection->getSelect()->orWhere('main_table.names LIKE \'%?%\'', $name);
+		if (!empty($requestData)) {
+			if(isset( $requestData['name'] )){
+				$collection->getSelect()->Having('names LIKE CONCAT(\'%\',?,\'%\')',$requestData['name']);
 			}
-			if(isset($requestData['sku'])){
-				$sku = $requestData['sku'];
-				$collection->getSelect()->orWhere('main_table.skus LIKE \'%?%\'', $sku);
+			if(isset( $requestData['sku'] )){
+				$collection->getSelect()->Having('skus LIKE CONCAT(\'%\',?,\'%\')', $requestData['sku']);
 			}
         }
-		
+		print((string)$collection->getSelect());
 		set_time_limit ('600');
 			Mage::unregister('dyno_col'); 
 			Mage::register('dyno_col', Mage::helper('xreports')->dynoColCallback($collection));
 			$newCollection = new Varien_Data_Collection();
 			$dyno_col=(array)Mage::registry('dyno_col');
 			$collection=Mage::registry('collection');
-			foreach($collection as $item){
-				foreach($dyno_col as $keyed){
-					$value=Mage::helper('xreports')->dynoColValue($item,$keyed);
-					$item->setData("${keyed}",$value);
-				 }
-				 $newCollection->addItem($item);
+			if(!empty($collection)){
+				foreach($collection as $item){
+					foreach($dyno_col as $keyed){
+						$value=Mage::helper('xreports')->dynoColValue($item,$keyed);
+						$item->setData("${keyed}",$value);
+					 }
+					 $newCollection->addItem($item);
+				}
 			}
 		set_time_limit ('60');
 		return $newCollection;
