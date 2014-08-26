@@ -178,9 +178,10 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 				// Loop through all items in the cart
 				foreach ($model->getAllVisibleItems() as $item) {
 					$product = $item->getProduct();
+					$result = array();
 					if(isset( $requestData['sku'] ) && strtolower($requestData['sku'])==strtolower($item->getSku()) || !isset( $requestData['sku'] )){
 						// Array to hold the item's options
-						$result = array();
+						
 						// Load the configured product options
 						$options = $item->getProductOptions();
 						//$finalResult = array_merge($finalResult, $options);
@@ -199,17 +200,14 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 						}
 						$finalResult = array_merge($finalResult, $result);
 					}
+				}
 					/*if($_item->getId()==94){
 						
 						var_dump($requestData['sku']);
-						var_dump($result);
+						var_dump($finalResult);
 						var_dump($model->getAllVisibleItems());
 						die('94');	
 					}*/
-					
-					
-					
-				}
 				foreach ($finalResult as $_option){
 					$label = trim($this->escapeHtml($_option['label']));
 					if ($label!=="" && strpos($label,'guest_')===false ){
