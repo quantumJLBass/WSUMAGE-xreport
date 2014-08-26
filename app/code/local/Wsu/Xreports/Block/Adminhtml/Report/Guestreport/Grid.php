@@ -154,6 +154,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
 				'type' => 'text',
 				'width' => '100',
 				'sortable' => true,
+				'filter' => false,
 				'renderer' => 'Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Option'
 			));	
 		}
