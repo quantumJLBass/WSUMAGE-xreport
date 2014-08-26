@@ -174,11 +174,11 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 			foreach($collection as $_item){
 				$finalResult = array();
 				$model = Mage::getModel('sales/order')->load($_item->getId());
-	
+				
 				// Loop through all items in the cart
 				foreach ($model->getAllVisibleItems() as $item) {
 					$product = $item->getProduct();
-					if(isset( $requestData['sku'] ) && strtolower($requestData['sku'])==strtolower($product->getSku()) || !isset( $requestData['sku'] )){
+					if(isset( $requestData['sku'] ) && strtolower($requestData['sku'])==strtolower($item->getSku()) || !isset( $requestData['sku'] )){
 						// Array to hold the item's options
 						$result = array();
 						// Load the configured product options
@@ -199,6 +199,16 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 						}
 						$finalResult = array_merge($finalResult, $result);
 					}
+					/*if($_item->getId()==94){
+						
+						var_dump($requestData['sku']);
+						var_dump($result);
+						var_dump($model->getAllVisibleItems());
+						die('94');	
+					}*/
+					
+					
+					
 				}
 				foreach ($finalResult as $_option){
 					$label = trim($this->escapeHtml($_option['label']));
