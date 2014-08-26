@@ -95,10 +95,10 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 				$collection->getSelect()->Where('main_table.customer_lastname LIKE CONCAT(?,\'%\')',$requestData['customer_lastname']);
 			}
 			if(isset( $requestData['name'] )){
-				$collection->getSelect()->Having('names LIKE CONCAT(?,\'%\')',$requestData['name']);
+				$collection->getSelect()->Having('names LIKE CONCAT(\'%\',?,\'%\')',$requestData['name']);
 			}
 			if(isset( $requestData['sku'] )){
-				$collection->getSelect()->Having('skus LIKE CONCAT(?,\'%\')', $requestData['sku']);
+				$collection->getSelect()->Having('skus LIKE CONCAT(\'%\',?,\'%\')', $requestData['sku']);
 			}
         }
 		//print((string)$collection->getSelect());
