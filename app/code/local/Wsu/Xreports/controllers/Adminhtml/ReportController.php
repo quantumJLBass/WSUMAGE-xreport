@@ -579,8 +579,9 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
 		$this->_title($this->__('xReports'))->_title($this->__('Guest Report'));
 		if((Mage::registry('csv_export')!=true)){ Mage::register('csv_export', false); }
 		
-		Mage::unregister('collection');
+		
 		$collection = Mage::helper('xreports')->_findCollection();
+		Mage::unregister('collection');
 		Mage::register( 'collection', $collection );
 		
 		$this->_initAction()
