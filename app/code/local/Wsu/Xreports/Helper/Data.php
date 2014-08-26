@@ -82,6 +82,12 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 			$collection->getSelect()->where('main_table.store_id IN(?)', $arrStoreIds);
 		}
 		if (!empty($requestData)) {
+			if(isset( $requestData['customer_firstname'] )){
+				$collection->getSelect()->Where('main_table.customer_firstname LIKE CONCAT(\'%\',?,\'%\')',$requestData['customer_firstname']);
+			}
+			if(isset( $requestData['customer_lastname'] )){
+				$collection->getSelect()->Where('main_table.customer_lastname LIKE CONCAT(\'%\',?,\'%\')',$requestData['customer_lastname']);
+			}
 			if(isset( $requestData['name'] )){
 				$collection->getSelect()->Having('names LIKE CONCAT(\'%\',?,\'%\')',$requestData['name']);
 			}
@@ -89,7 +95,7 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 				$collection->getSelect()->Having('skus LIKE CONCAT(\'%\',?,\'%\')', $requestData['sku']);
 			}
         }
-		//print((string)$collection->getSelect());
+		print((string)$collection->getSelect());
 		set_time_limit ('600');
 			Mage::unregister('dyno_col'); 
 			Mage::register('dyno_col', Mage::helper('xreports')->dynoColCallback($collection));
