@@ -82,6 +82,12 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 			$collection->getSelect()->where('main_table.store_id IN(?)', $arrStoreIds);
 		}
 		if (!empty($requestData)) {
+			if(isset( $requestData['status'] )){
+				$collection->getSelect()->Where('main_table.status = ?',$requestData['status']);
+			}
+			if(isset( $requestData['customer_email'] )){
+				$collection->getSelect()->Where('main_table.customer_email LIKE CONCAT(\'%\',?,\'%\')',$requestData['customer_email']);
+			}
 			if(isset( $requestData['customer_firstname'] )){
 				$collection->getSelect()->Where('main_table.customer_firstname LIKE CONCAT(\'%\',?,\'%\')',$requestData['customer_firstname']);
 			}
