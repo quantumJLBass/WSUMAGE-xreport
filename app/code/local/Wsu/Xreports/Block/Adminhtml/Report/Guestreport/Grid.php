@@ -194,7 +194,69 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
 				'renderer' => 'Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Renderer_Item',
 				'sortable' => true
 			));
-		}		
+		}
+		if(empty($_col) || isset($_col['total_qty_ordered'])){
+			$this->addColumn('total_qty_ordered', array(
+				'header' => Mage::helper('xreports')->__('Qty. Ordered'),
+				'align' => 'left',
+				'index' => 'total_qty_ordered',
+				'type' => 'number',
+				'total' => 'sum',
+				'sortable' => true,
+				'renderer'          => 'Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Qtyordered',
+			));
+		}
+		
+		if(empty($_col) || isset($_col['qty_invoiced'])){
+			$this->addColumn('qty_invoiced', array(
+				'header' => Mage::helper('xreports')->__('Qty. Invoiced'),
+				'align' => 'left',
+				'index' => 'qty_invoiced',
+				'type' => 'number',
+				'total' => 'sum',
+				'sortable' => true,
+				'renderer'          => 'Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Qtyinvoiced',
+			));
+		}
+		
+		if(empty($_col) || isset($_col['qty_shipped'])){
+			$this->addColumn('qty_shipped', array(
+				'header' => Mage::helper('xreports')->__('Qty. Shipped'),
+				'align' => 'left',
+				'index' => 'qty_shipped',
+				'type' => 'number',
+				'total' => 'sum',
+				'sortable' => true,
+				'renderer'          => 'Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Qtyshipped',
+			));
+		}
+		
+		if(empty($_col) || isset($_col['qty_refunded'])){
+			$this->addColumn('qty_refunded', array(
+				'header' => Mage::helper('xreports')->__('Qty. Refunded'),
+				'align' => 'left',
+				'index' => 'qty_refunded',
+				'type' => 'number',
+				'total' => 'sum',
+				'sortable' => true,
+				'renderer'          => 'Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Qtyrefunded',
+			));
+		}
+		
+		if(empty($_col) || isset($_col['subtotal'])){
+			$this->addColumn('subtotal', array(
+				'header' => Mage::helper('xreports')->__('Subtotal'),
+				'align' => 'right',
+				'index' => 'subtotal',
+				'currency_code' => $currencyCode,
+				'width' => '100px',
+				'type' => 'currency',
+				'total' => 'sum',
+				'sortable' => true
+			));
+		}
+		
+				
 		if(empty($_col) || isset($_col['customer_email'])){
 			$this->addColumn('customer_email', array(
 				'header' => Mage::helper('xreports')->__('Customer Email'),
