@@ -1,6 +1,7 @@
 <?php
 $numColumns = sizeof($this->getColumns());
-$requestData =    Mage::helper('adminhtml')->prepareFilterString($this->getRequest()->getParam('filter'));
+$request = Mage::app()->getRequest();
+$requestData =    Mage::helper('adminhtml')->prepareFilterString($request->getParam('filter'));
 ?>
 <?php
     $orderCollection = Mage::getModel('sales/order')
@@ -144,12 +145,47 @@ $requestData =    Mage::helper('adminhtml')->prepareFilterString($this->getReque
 <?php endif; ?>
 
 <?php
-$_col = $this->getRequest()->getParam('_col');
+$_col = $request->getParam('_col');
 ?>
 <div>
     <a href="#" class="filter_col">Choose Columns</a>
     <div class="filter_col_block" style="display:none;">
-        <form action="" method="post" >
+        <form action="<?=Mage::helper("adminhtml")->getUrl('*/*/guestreport')?>" method="post" >
+		<?php
+			$columns= array(
+				'increment_id'=>"Order #",
+				'dyno_options'=>"Item Options",
+				'created_at'=>"Order Date",
+				'name'=>"Product Name",
+				'status'=>"Status",
+				'sku'=>"Sku",
+				'customer_email'=>"Customer Email",
+				'customer_group_id'=>"Customer Group",
+				'country_id'=>"Country",
+				'region'=>"Region",
+				'city'=>"City",
+				'postcode'=>"Postcode",
+				'name'=>"Product Name",
+				'total_qty_ordered'=>"Qty. Ordered",
+				'qty_invoiced'=>"Qty. Invoiced",
+				'qty_shipped'=>"Qty. Shipped",
+				'qty_refunded'=>"Qty. Refunded",
+				'subtotal'=>"Subtotal",
+				
+				'tax_amount'=>"Tax",
+				'discount_amount'=>"Discount",
+				'grand_total'=>"Total",
+				'total_invoiced'=>"Invoiced",
+				'total_refunded'=>"Refunded",
+
+			);
+		?>
+		
+		
+		<?php foreach($columns as $key=>$label):?>
+			<input type="checkbox" name="_col[<?=$key?>]" <?php if( isset($_col[$key]) ):?>checked<?php endif;?> value='1' /><?=$label?><br/>
+		<?php endforeach;?>
+		<!--
             <input type="checkbox" name="_col[increment_id]" <?php if( isset($_col['increment_id']) ):?>checked<?php endif;?> value='1' />Order #<br/>
             <input type="checkbox" name="_col[dyno_options]" <?php if( isset($_col['dyno_options']) ):?>checked<?php endif;?> value='1' />Item Options<br/>
             <input type="checkbox" name="_col[created_at]"  <?php if( isset($_col['created_at']) ):?>checked<?php endif;?> value='1' />Order Date<br/>
@@ -173,6 +209,7 @@ $_col = $this->getRequest()->getParam('_col');
             <input type="checkbox" name="_col[grand_total]"  <?php if( isset($_col['grand_total']) ):?>checked<?php endif;?> value='1' />Total<br/>
             <input type="checkbox" name="_col[total_invoiced]"  <?php if( isset($_col['total_invoiced']) ):?>checked<?php endif;?> value='1' />Invoiced<br/>
             <input type="checkbox" name="_col[total_refunded]"  <?php if( isset($_col['total_refunded']) ):?>checked<?php endif;?> value='1' />Refunded<br/>
+			-->
             <button class="scalable task"><span><span>Show Columns</span></span></button>
         </form>
         

@@ -11,19 +11,19 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Qtyordered extend
 		$model = Mage::getModel('sales/order')->load($id);
 		
 		if(isset( $requestData['sku'] )){
-			 $html =  '0';
-			 
+			$html =  '0';
 			foreach ($model->getAllVisibleItems() as $item) {
+				//var_dump($item);die();
 				if( strtolower($requestData['sku'])==strtolower($item->getSku()) ){	
-					 $html = $item->getQtyInvoiced();
+					 $html = $item->getQtyOrdered();
 				}
 			}
 		}else{
 			$model->getFirstItem();
-			if ((int) $model->getQtyInvoiced() == 0) {
+			if ((int) $model->getQtyOrdered() == 0) {
 				$html = '0';
 			} else {
-				$html = (int) $model->getQtyInvoiced();
+				$html = (int) $model->getQtyOrdered();
 			}
 		}
         return $html;

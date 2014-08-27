@@ -122,7 +122,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
 				'index' => 'name',
 				'type' => 'text',
 				'width' => '200',
-				'renderer' => 'Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Renderer_Name',
+				'renderer' => 'Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Productname',
 				'sortable' => true
 			));
 		}		
@@ -144,6 +144,17 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
 				'index' => 'customer_lastname',
 				'type' => 'text',
 				'sortable' => true
+			));
+		}
+		if(empty($_col) || isset($_col['total_qty_ordered'])){
+			$this->addColumn('total_qty_ordered', array(
+				'header' => Mage::helper('xreports')->__('Qty. Ordered'),
+				'align' => 'left',
+				'index' => 'total_qty_ordered',
+				'type' => 'number',
+				'total' => 'sum',
+				'sortable' => true,
+				'renderer'          => 'Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Qtyordered',
 			));
 		}
 		$dyno_col=(array)Mage::registry('dyno_col');
@@ -195,17 +206,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
 				'sortable' => true
 			));
 		}
-		if(empty($_col) || isset($_col['total_qty_ordered'])){
-			$this->addColumn('total_qty_ordered', array(
-				'header' => Mage::helper('xreports')->__('Qty. Ordered'),
-				'align' => 'left',
-				'index' => 'total_qty_ordered',
-				'type' => 'number',
-				'total' => 'sum',
-				'sortable' => true,
-				'renderer'          => 'Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Qtyordered',
-			));
-		}
+
 		
 		if(empty($_col) || isset($_col['qty_invoiced'])){
 			$this->addColumn('qty_invoiced', array(
