@@ -215,7 +215,7 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
 						->addFieldToFilter('store_id', array('in' => $storeIds));
 			}
 			$strStatuses = null;
-			if (isset($requestData['order_statuses']) && $requestData['order_statuses'] != null) {
+			if (isset($requestData['order_statuses']) && !is_null($requestData['order_statuses'])) {
 				$orderStatuses = explode(',', $requestData['order_statuses'][0]);
 				$arrOrderStatuses = array();
 				foreach ($orderStatuses as $status) {
@@ -674,7 +674,7 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
         $data = array();
         foreach ($collection as $order) {
             if (!is_null($order->getCountryId())) {
-                if (Mage::app()->getLocale()->getCountryTranslation($order->getCountryId()) != null) {
+                if (!is_null(Mage::app()->getLocale()->getCountryTranslation($order->getCountryId()))) {
                     $data[] = array('label' => Mage::app()->getLocale()->getCountryTranslation($order->getCountryId()), 'value' => $order->getTotalItemCount());
                 }
             }
@@ -705,7 +705,7 @@ class Wsu_Xreports_Adminhtml_ReportController extends Mage_Adminhtml_Controller_
         $data = array();
         foreach ($collection as $order) {
             $customerGroup = Mage::getModel('customer/group')->load($order->getCustomerGroupId());
-            if ($customerGroup->getCustomerGroupCode() != null) {
+            if (!is_null($customerGroup->getCustomerGroupCode())) {
                 $data[] = array('label' => $customerGroup->getCustomerGroupCode(), 'value' => $order->getTotalItemCount());
             }
         }
