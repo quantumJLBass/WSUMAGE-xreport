@@ -52,7 +52,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Grid extends Mage_Adminhtm
             }
         } else {
             $storeIds = $this->getRequest()->getParam('store_ids');
-            if ($storeIds == null) {
+            if (is_null($storeIds)) {
                 $collection = Mage::getModel('sales/order')->getCollection();
                 $collection->getSelect()->join(Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address'), 'main_table.billing_address_id = ' . Mage::getSingleton('core/resource')->getTableName('sales_flat_order_address') . '.entity_id', array('country_id', 'region', 'city', 'postcode', 'main_table.total_qty_ordered', 'main_table.subtotal', 'main_table.tax_amount', 'main_table.discount_amount', 'main_table.grand_total', 'main_table.total_invoiced', 'main_table.total_refunded'));
                 $collection->join(
