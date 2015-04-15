@@ -69,6 +69,7 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 				'sales/order_item', '`sales/order_item`.order_id=`main_table`.entity_id', array(
 					'skus' => new Zend_Db_Expr('group_concat(`sales/order_item`.sku SEPARATOR ",")'),
 					'names' => new Zend_Db_Expr('group_concat(`sales/order_item`.name SEPARATOR ",")'),
+					'product_type',
 					'qty_invoiced',
 					'qty_shipped',
 					'qty_refunded',
@@ -101,7 +102,14 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 				$collection->getSelect()->Having('skus LIKE CONCAT(\'%\',?,\'%\')', $requestData['sku']);
 			}
         }
-		//print((string)$collection->getSelect());
+		
+		
+		//if( isset(Wsu_eventTickets_Model_Product_Type::TYPE_CP_PRODUCT) ){
+			$collection->getSelect()->Where('product_type = ?', Wsu_eventTickets_Model_Product_Type::TYPE_CP_PRODUCT);
+		//}
+		//print(Wsu_eventTickets_Model_Product_Type::TYPE_CP_PRODUCT);
+		//print((string) $collection->getSelect());die();
+		
 		set_time_limit ('600');
 			Mage::unregister('dyno_col'); 
 			Mage::register('dyno_col', Mage::helper('xreports')->dynoColCallback($collection));

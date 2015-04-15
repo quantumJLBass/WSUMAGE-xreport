@@ -18,6 +18,9 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
 
     protected function _prepareCollection() {
 		$collection = Mage::registry('collection');
+		if( defined(Wsu_eventTickets_Model_Product_Type::TYPE_CP_PRODUCT) ){
+			$collection->addAttributeToFilter('type_id', Wsu_eventTickets_Model_Product_Type::TYPE_CP_PRODUCT);
+		}
 		$this->setCollection($collection);
         return parent::_prepareCollection();
     }
