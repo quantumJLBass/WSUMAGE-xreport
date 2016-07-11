@@ -34,18 +34,26 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 
 		$fromDate = date('Y-m-d H:i:s', strtotime('now'));
 		$toDate = date('Y-m-d H:i:s', strtotime('now'));
+        //var_dump($requestData);die();
 		if (!empty($requestData) && isset($requestData['created_at'])) {
+            if( isset($requestData['created_at']['to']) 
+			    && strtotime($requestData['created_at']['to'].' 23:59:59' )<strtotime('now')
+			){
+                $strtime_to = strtotime($requestData['created_at']['to'].' 23:59:59' );
+				$toDate=date('Y-m-d H:i:s', $strtime_to);
+                
+			}else{
+                $strtime_to = strtotime(date("m-d-Y").' 23:59:59' );
+                $toDate=date('Y-m-d H:i:s', $strtime_to);
+                
+            }
 			if( isset($requestData['created_at']['from'])
 				 && strtotime($requestData['created_at']['from'].' 00:00:00' ) < strtotime('now')
-				 && strtotime($requestData['created_at']['from'].' 00:00:00' ) < strtotime($requestData['created_at']['to'].' 23:59:59' )
+				 && strtotime($requestData['created_at']['from'].' 00:00:00' ) < $strtime_to
 			){
 				$fromDate=date('Y-m-d H:i:s', strtotime( $requestData['created_at']['from'].' 00:00:00' ));
 			}
-			if( isset($requestData['created_at']['to']) 
-			    && strtotime($requestData['created_at']['to'].' 23:59:59' )<strtotime('now')
-			){
-				$toDate=date('Y-m-d H:i:s', strtotime($requestData['created_at']['to'].' 23:59:59' ));
-			}
+			
 		}
 		$collection->addAttributeToFilter('main_table.created_at', array('from'=>$fromDate,'to'=>$toDate));
 
@@ -103,10 +111,12 @@ class Wsu_Xreports_Helper_Data extends Mage_Core_Helper_Abstract {
 			}
         }
 		
-		
-		//if( isset(Wsu_eventTickets_Model_Product_Type::TYPE_CP_PRODUCT) ){
+		$eventTickets = Mage::helper('core')->isModuleEnabled('Wsu_eventTickets');
+		if( $eventTickets ){
 			$collection->getSelect()->Where('product_type = ?', Wsu_eventTickets_Model_Product_Type::TYPE_CP_PRODUCT);
-		//}
+		}else{
+            $collection->getSelect(); //should be an option
+        }
 		//print(Wsu_eventTickets_Model_Product_Type::TYPE_CP_PRODUCT);
 		//print((string) $collection->getSelect());die();
 		
