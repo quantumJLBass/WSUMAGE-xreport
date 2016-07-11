@@ -9,9 +9,8 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Qtyordered extend
 		$requestData = Mage::helper('adminhtml')->prepareFilterString($request->getParam('filter'));
 		
 		$model = Mage::getModel('sales/order')->load($id);
-		
+		$html = '0';
 		if(isset( $requestData['sku'] )){
-			$html =  '0';
 			foreach ($model->getAllVisibleItems() as $item) {
 				//var_dump($item);die();
 				if( strtolower($requestData['sku'])==strtolower($item->getSku()) ){	
@@ -19,10 +18,13 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Qtyordered extend
 				}
 			}
 		}else{
+            
+			foreach ($model->getAllVisibleItems() as $item) {
+				//var_dump($item);die();
+			    $html += $item->getQtyOrdered();
+			}
 			$model->getFirstItem();
-			if ((int) $model->getQtyOrdered() == 0) {
-				$html = '0';
-			} else {
+			if ( 0 !== (int) $model->getQtyOrdered() ) {
 				$html = (int) $model->getQtyOrdered();
 			}
 		}
