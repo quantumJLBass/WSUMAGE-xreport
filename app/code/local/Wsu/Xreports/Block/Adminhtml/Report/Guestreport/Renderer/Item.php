@@ -5,24 +5,25 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Item extends Mage
     public function render(Varien_Object $row) {
         $id = $row->getData('entity_id');
 
-		
+
 		$finalResult = array();
 		$model = Mage::getModel('sales/order')->load($id);
-		
+
 		$html="";
 		// Loop through all items in the cart
 		foreach ($model->getAllVisibleItems() as $item) {
-			$product = $item->getProduct();
+		    //$product = $item->getProduct();
 		  // Array to hold the item's options
 		  $result = array();
 		  // Load the configured product options
 		  $options = $item->getProductOptions();
+          //var_dump($options);
 		  //$finalResult = array_merge($finalResult, $options);
 		  // Check for options
 		  if (isset($options['info_buyRequest'])){
 			$info = $options['info_buyRequest'];
 			if (isset($info['options'])){
-			//	$result = array_merge($result, $info['options']);
+				$result = array_merge($result, $info['options']);
 			}
 			if (isset($info['options']['additional_options'])){
 				$result = array_merge($result, unserialize($info['options']['additional_options']) );
@@ -33,10 +34,11 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Item extends Mage
 		  }
 		  $finalResult = array_merge($finalResult, $result);
 		}
+        //var_dump($finalResult);
 		$csv_export = Mage::registry('csv_export');
 		//var_dump($csv_export);
 		if($csv_export==true){
-			
+
 			$options=array();
 			$guestkeyarray=array();
 			$guestarray=array();
@@ -54,51 +56,51 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Item extends Mage
 			}
 
 			$guestkeyarray=array_unique($guestkeyarray);
-			
+
 			foreach ($guestkeyarray as $_opkey){
 				$firstname = isset($guestarray["guest_${_opkey}_firstName"])?$guestarray["guest_${_opkey}_firstName"]:"";
 				$lastname = isset($guestarray["guest_${_opkey}_lastName"])?$guestarray["guest_${_opkey}_lastName"]:"";
 				$options[]="Guest ${_opkey}:".$firstname." ".$lastname;
 			}
 			$html = implode(",\r\n", $options);
-			//$html = '"'.$str.'"';			
+			//$html = '"'.$str.'"';
 		}else{
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
 		ob_start();
    ?><?php if (!empty($finalResult)):?>
-				
-				
-                	
+
+
+
 					<?php
-					
-					
-					
+                    //var_dump($finalResult);die();
 					$options=array();
 					foreach ($finalResult as $_option){
-						$label = trim($this->escapeHtml($_option['label']));
-						$value = trim($_option['value']);
-						if ( $value!=="" && $label!=="" && strpos($label,'guest_')===false ){
-							$options[]=$_option;			
-						}
+						$options[]=$_option;
 					}
-					
+
 					if(!empty($options)):
 					?>
-				
-				
-				
+
+
+
                 	<h4><?=$this->__('Your options')?></h4>
                     <dl>
-                        <?php foreach ($options as $_option) : 
-						$label = trim($this->escapeHtml($_option['label']));
-						$value = trim($_option['value']);
-						if ( $value!=="" && $label!=="" && strpos($label,'guest_')===false ): ?>
+                        <?php foreach ($options as $_option) :
+                        $label = "";
+                        if( isset($_option['label']) ){
+                            $label = trim($this->escapeHtml($_option['label']));
+                        }
+						$value = "";
+                        if( isset($_option['value']) ){
+                            $value = trim($_option['value']);
+                        }
+						if ( $value!=="" ): //&& $label!=="" && strpos($label,'guest_')===false ?>
                             <dt><?php
 								if(strpos($label,'firstName')!==false){
 									echo "First Name:";
@@ -120,49 +122,45 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Item extends Mage
                     </dl>
 					<?php endif;?>
                 <?php endif;?>
-		
                 <?php if (!empty($finalResult)):?>
-                	
 					<?php
 					$options=array();
 					foreach ($finalResult as $_option){
-						$label = trim($this->escapeHtml($_option['label']));
-						$value = trim($_option['value']);
-						if ( $label!=="" && strpos($label,'guest_')!==false 
-									&& strpos($label,'_{%d%}_')===false ){
-							$options[]=$_option;			
+                        $label = "";
+                        if( isset($_option['label']) ){
+                            $label = trim($this->escapeHtml($_option['label']));
+                        }
+						$value = "";
+                        if( isset($_option['value']) ){
+                            $value = trim($_option['value']);
+                        }
+						if ( $label!=="" ){ // && strpos($label,'guest_')!==false && strpos($label,'_{%d%}_')===false
+							$options[]=$_option;
 						}
 					}
-					
 					if(!empty($options)):
 					?>
 					<h4><?=$this->__('Guest list')?></h4>
-					
-					
-					
-					
                     	<?php $i=1; ?>
                         <?php foreach ($options as $_option) : ?>
 							<?php //$_formatedOptionValue = $this->getFormatedOptionValue($_option) ?>
-                            <?php 
+                            <?php
                             $label = trim($this->escapeHtml($_option['label']));
                             $value = trim($_option['value']);
-                            if ( $label!=="" && strpos($label,'guest_')!==false 
-									&& strpos($label,'_{%d%}_')===false ):
+                            if ( $label!=="" ): //&& strpos($label,'guest_')!==false && strpos($label,'_{%d%}_')===false
 									 ?>
 							<?php
-								
 								if(strpos($label,'guest_'.$i.'_')!==false){
 									if($i>0){
-										echo "</dl>";	
+										echo "</dl>";
 									}
 									echo "Guest ".$i."<dl>";
 									$i++;
 								}
-							 ?>	
+							 ?>
 								 <?php if ( $value!=="" ): ?>
                                     <dt><?php
-                                        
+
                                         if(strpos($label,'firstName')!==false){
                                             echo "First Name:";
                                         }elseif(strpos($label,'lastName')!==false){
@@ -185,8 +183,8 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Item extends Mage
 					<?php endif;?>
                 <?php endif;?>
 		<?php
-		    
-		$html .= ob_get_clean(); 
+
+		$html .= ob_get_clean();
 		}
         return $html;
     }

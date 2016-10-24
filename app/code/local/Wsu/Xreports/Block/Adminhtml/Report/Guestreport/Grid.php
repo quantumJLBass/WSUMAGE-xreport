@@ -206,7 +206,7 @@ class Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Grid extends Mage_Adminhtm
 				'width' => '250',
 				'index' => 'increment_id',
 				'type' => 'text',
-				'renderer' => 'Wsu_Xreports_Block_Adminhtml_Report_Salesreport_Renderer_Item',
+				'renderer' => 'Wsu_Xreports_Block_Adminhtml_Report_Guestreport_Renderer_Item',
 				'sortable' => true
 			));
 		}
